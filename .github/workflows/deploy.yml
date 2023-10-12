@@ -13,7 +13,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-    - name: code checkout
+    - name: Code checkout
       uses: actions/checkout@v3
 
     - name: Use Node.js ${{ matrix.node-version }}
@@ -23,3 +23,12 @@ jobs:
     - run: npm install -g yarn
     - run: yarn install --frozen-lockfile
     - run: yarn build
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.github_page_token }}
+        publish_branch: gh-pages
+        publish_dir: ./public
+        force_orphan: true
+
