@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	// static导出
-	output: 'export',
+	output: 'export', // static导出
 	images:{
-		unoptimized: true
+		unoptimized: true // static导出
 	},
+	basePath: '/adamswap', // 适配 github page
 	
 	reactStrictMode: true,
 };
