@@ -4,11 +4,15 @@ import styles from "@/styles/Home.module.css";
 import { useState } from "react";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
+import { Button } from "antd";
+import NumericInput from "../components/NumericInput";
 
 export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
+
+  const [value, setValue] = useState("");
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
@@ -60,7 +64,7 @@ export default function Home() {
       </header>
       <main className={styles.main}>
         <div className={styles.wrapper}>
-          <div className={styles.container}>
+          {/* <div className={styles.container}>
             <h1>Next.js Starter Template</h1>
             <div className={styles.content}>
               <ul>
@@ -120,6 +124,14 @@ export default function Home() {
             >
               Check out the full documentation here
             </a>
+          </div> */}
+          <div className={styles.container}>
+            <NumericInput
+              style={{ width: 120 }}
+              value={value}
+              onChange={setValue}
+            />
+            <Button type="primary">Button</Button>
           </div>
         </div>
       </main>
