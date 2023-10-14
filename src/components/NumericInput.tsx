@@ -1,5 +1,6 @@
 import React from "react";
 import { Input, Tooltip } from "antd";
+import styles from "../styles/NumericInput.module.less"
 
 interface NumericInputProps {
   style: React.CSSProperties;
@@ -38,14 +39,16 @@ const NumericInput = (props: NumericInputProps) => {
   );
 
   return (
-    <Input
-      {...props}
-      size="large"
-      onChange={handleChange}
-      onBlur={handleBlur}
-      placeholder="Input a number"
-      maxLength={16}
-    />
+    <div className={styles["numeric-input"]}>
+      <Input
+        {...props}
+        size="large"
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder="Input a number"
+        maxLength={16}
+      />
+    </div>
   );
 };
 
