@@ -7,11 +7,11 @@ const { darkAlgorithm, defaultSeed } = theme;
 const mapToken = darkAlgorithm({ ...defaultSeed, ...userSeedToken });
 
 const nextConfig = {
-  // output: 'export', // static导出
-  // images:{
-  // 	unoptimized: true // static导出
-  // },
-  // basePath: '/adamswap', // 适配 github page
+  output: 'export', // static导出
+  images: {
+    unoptimized: true // static导出
+  },
+  basePath: '/adamswap', // 适配 github page
 
   reactStrictMode: true,
   lessLoaderOptions: {
