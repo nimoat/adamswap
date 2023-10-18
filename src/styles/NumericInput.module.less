@@ -1,5 +1,51 @@
+@gray-font-color: rgb(155, 155, 155);
+@input-bgcolor: rgb(27, 27, 27);
+
 .numeric-input {
-  // background-color: @colorPrimary;
-  font-size: 30px;
-  padding: @sizeMD + 0px;
+  font-size: 36px;
+  padding: @sizeMS + 0px;
+  background-color: @input-bgcolor;
+  border: 1px solid @input-bgcolor;
+  border-radius: 16px;
+
+  &:hover {
+    border: 1px solid @colorFillQuaternary;
+  }
+
+  &:focus-within {
+    border: 1px solid @colorFill;
+  }
+
+  :global {
+    .tip {
+      font-size: 12px;
+      color: @gray-font-color;
+    }
+
+    .center {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .ant-input {
+        border: none;
+        padding: 0;
+        background-color: transparent;
+        width: 300px;
+        font-size: 36px;
+      }
+
+      .token-selector {
+        padding-left: @fontSizeSM + '0px';
+        font-size: 28px;
+      }
+    }
+
+    .bottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: @gray-font-color;
+    }
+  }
 }

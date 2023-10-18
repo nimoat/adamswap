@@ -3,7 +3,8 @@ import { Input, Tooltip } from "antd";
 import styles from "../styles/NumericInput.module.less"
 
 interface NumericInputProps {
-  style: React.CSSProperties;
+  style?: React.CSSProperties;
+  tip?: string;
   value: string;
   onChange: (value: string) => void;
 }
@@ -11,7 +12,7 @@ interface NumericInputProps {
 const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 
 const NumericInput = (props: NumericInputProps) => {
-  const { value, onChange } = props;
+  const { tip = "", value, onChange } = props;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = e.target;
@@ -40,14 +41,22 @@ const NumericInput = (props: NumericInputProps) => {
 
   return (
     <div className={styles["numeric-input"]}>
-      <Input
-        {...props}
-        size="large"
-        onChange={handleChange}
-        onBlur={handleBlur}
-        placeholder="Input a number"
-        maxLength={16}
-      />
+      <div className="tip">{tip}</div>
+      <div className="center">
+        <Input
+          {...props}
+          size="large"
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder="0"
+          maxLength={16}
+        />
+        <div className="token-selector">ETH</div>
+      </div>
+      <div className="bottom">
+        <div className="bottom-left">$1.58</div>
+        <div className="bottom-right">Balance: 0.008</div>
+      </div>
     </div>
   );
 };

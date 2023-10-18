@@ -1,10 +1,11 @@
 import Head from "next/head";
 import Image from "next/image";
-import styles from "@/styles/Home.module.css";
+import styles from "@/styles/Home.module.less";
 import { useState } from "react";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
 import { Button } from "antd";
+import { SwapOutlined } from '@ant-design/icons';
 import NumericInput from "../components/NumericInput";
 
 export default function Home() {
@@ -45,17 +46,15 @@ export default function Home() {
           <div className={styles.buttons}>
             <div
               onClick={closeAll}
-              className={`${styles.highlight} ${
-                isNetworkSwitchHighlighted ? styles.highlightSelected : ``
-              }`}
+              className={`${styles.highlight} ${isNetworkSwitchHighlighted ? styles.highlightSelected : ``
+                }`}
             >
               <w3m-network-button />
             </div>
             <div
               onClick={closeAll}
-              className={`${styles.highlight} ${
-                isConnectHighlighted ? styles.highlightSelected : ``
-              }`}
+              className={`${styles.highlight} ${isConnectHighlighted ? styles.highlightSelected : ``
+                }`}
             >
               <w3m-button />
             </div>
@@ -126,12 +125,21 @@ export default function Home() {
             </a>
           </div> */}
           <div className={styles.container}>
+            <div className={styles.title}>Swap</div>
             <NumericInput
-              style={{ width: 120 }}
+              tip="You pay"
               value={value}
               onChange={setValue}
             />
-            <Button type="primary">Button</Button>
+            <div className={styles.divide}>
+              <div className={styles.swapIcon}><SwapOutlined /></div>
+            </div>
+            <NumericInput
+              tip="You Receive"
+              value={value}
+              onChange={setValue}
+            />
+            <Button type="primary" size="large">Swap</Button>
           </div>
         </div>
       </main>
