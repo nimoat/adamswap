@@ -139,7 +139,13 @@ export default function Home() {
               value={value}
               onChange={setValue}
             />
-            <Button type="primary" size="large">Swap</Button>
+            <Button
+              className="swap-primary-btn"
+              type="primary"
+              size="large"
+            >
+              Swap
+            </Button>
           </div>
         </div>
       </main>

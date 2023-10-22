@@ -1,6 +1,7 @@
 import React from "react";
 import { Input, Tooltip } from "antd";
 import styles from "../styles/NumericInput.module.less"
+import CurrencySelect from "./CurrencySelect";
 
 interface NumericInputProps {
   style?: React.CSSProperties;
@@ -51,7 +52,7 @@ const NumericInput = (props: NumericInputProps) => {
           placeholder="0"
           maxLength={16}
         />
-        <div className="token-selector">ETH</div>
+        <CurrencySelect />
       </div>
       <div className="bottom">
         <div className="bottom-left">$1.58</div>
