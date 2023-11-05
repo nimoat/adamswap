@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input, Tooltip } from "antd";
 import styles from "../styles/NumericInput.module.less"
 import CurrencySelect from "./CurrencySelect";
+import CurrencySelectModal from './CurrencySelectModal'
 
 interface NumericInputProps {
   style?: React.CSSProperties;
@@ -14,6 +15,8 @@ const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 
 const NumericInput = (props: NumericInputProps) => {
   const { tip = "", value, onChange } = props;
+
+  const [selectModalShow, setSelectModalShow] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = e.target;
@@ -41,24 +44,27 @@ const NumericInput = (props: NumericInputProps) => {
   );
 
   return (
-    <div className={styles["numeric-input"]}>
-      <div className="tip">{tip}</div>
-      <div className="center">
-        <Input
-          {...props}
-          size="large"
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="0"
-          maxLength={16}
-        />
-        <CurrencySelect />
+    <>
+      <div className={styles["numeric-input"]}>
+        <div className="tip">{tip}</div>
+        <div className="center">
+          <Input
+            {...props}
+            size="large"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="0"
+            maxLength={16}
+          />
+          <CurrencySelect onClick={() => setSelectModalShow(true)} />
+        </div>
+        <div className="bottom">
+          <div className="bottom-left">$1.58</div>
+          <div className="bottom-right">Balance: 0.008</div>
+        </div>
       </div>
-      <div className="bottom">
-        <div className="bottom-left">$1.58</div>
-        <div className="bottom-right">Balance: 0.008</div>
-      </div>
-    </div>
+      <CurrencySelectModal open={selectModalShow} onOk={() => {}} onCancel={() => setSelectModalShow(false)} />
+    </>
   );
 };
 

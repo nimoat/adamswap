@@ -3,7 +3,7 @@ import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
 
 import { WagmiConfig } from "wagmi";
 import type { AppProps } from "next/app";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   arbitrum,
   avalanche,

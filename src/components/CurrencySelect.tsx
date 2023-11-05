@@ -7,14 +7,13 @@ import currenctLogoMap from './CurrenctLogoMap'
 import styles from "../styles/CurrencySelect.module.less"
 
 interface CurrcySelectProps {
-
+  onClick: () => {} | void;
 }
 
 const CurrencySelect = (props: CurrcySelectProps) => {
 
-
   return (
-    <Button className={styles.CurrencySelect} type="text" size="small">
+    <Button className={styles.CurrencySelect} type="text" size="small" onClick={props.onClick}>
       <Image
         src={currenctLogoMap.ETH}
         alt="WalletConnect Logo"

@@ -1,12 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "@/styles/Home.module.less";
-import { useState } from "react";
+import React, { useState } from "react";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
 import { Button } from "antd";
 import { SwapOutlined } from '@ant-design/icons';
-import NumericInput from "../components/NumericInput";
+import NumericInput from "../components/NumericInput"
 
 export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
