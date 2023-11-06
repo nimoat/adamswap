@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Modal,Input } from "antd";
-import { SearchOutlined } from '@ant-design/icons';
+import { Modal, Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 interface CurrencySelectModalProps {
   open: boolean;
@@ -9,7 +9,7 @@ interface CurrencySelectModalProps {
 }
 
 export default function CurrencySelectModal(props: CurrencySelectModalProps) {
-  const { open, onOk, onCancel  } = props
+  const { open, onOk, onCancel } = props;
 
   return (
     <Modal
@@ -19,7 +19,7 @@ export default function CurrencySelectModal(props: CurrencySelectModalProps) {
       // onOk={onOk}
       onCancel={onCancel}
     >
-       <Input prefix={<SearchOutlined />} placeholder="Search name or address" />
+      <Input prefix={<SearchOutlined />} placeholder="Search name or address" />
     </Modal>
-  )
+  );
 }

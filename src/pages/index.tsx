@@ -5,8 +5,8 @@ import React, { useState } from "react";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
 import { Button } from "antd";
-import { SwapOutlined } from '@ant-design/icons';
-import NumericInput from "../components/NumericInput"
+import { SwapOutlined } from "@ant-design/icons";
+import NumericInput from "../components/NumericInput";
 
 export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
@@ -46,15 +46,17 @@ export default function Home() {
           <div className={styles.buttons}>
             <div
               onClick={closeAll}
-              className={`${styles.highlight} ${isNetworkSwitchHighlighted ? styles.highlightSelected : ``
-                }`}
+              className={`${styles.highlight} ${
+                isNetworkSwitchHighlighted ? styles.highlightSelected : ``
+              }`}
             >
               <w3m-network-button />
             </div>
             <div
               onClick={closeAll}
-              className={`${styles.highlight} ${isConnectHighlighted ? styles.highlightSelected : ``
-                }`}
+              className={`${styles.highlight} ${
+                isConnectHighlighted ? styles.highlightSelected : ``
+              }`}
             >
               <w3m-button />
             </div>
@@ -126,24 +128,14 @@ export default function Home() {
           </div> */}
           <div className={styles.container}>
             <div className={styles.title}>Swap</div>
-            <NumericInput
-              tip="You pay"
-              value={value}
-              onChange={setValue}
-            />
+            <NumericInput tip="You pay" value={value} onChange={setValue} />
             <div className={styles.divide}>
-              <div className={styles.swapIcon}><SwapOutlined /></div>
+              <div className={styles.swapIcon}>
+                <SwapOutlined />
+              </div>
             </div>
-            <NumericInput
-              tip="You Receive"
-              value={value}
-              onChange={setValue}
-            />
-            <Button
-              className="swap-primary-btn"
-              type="primary"
-              size="large"
-            >
+            <NumericInput tip="You Receive" value={value} onChange={setValue} />
+            <Button className="swap-primary-btn" type="primary" size="large">
               Swap
             </Button>
           </div>
