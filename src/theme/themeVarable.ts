@@ -1,9 +1,7 @@
-const userSeedToken =  {
+const userSeedToken = {
   fontSize: 16,
-}
+};
 
-const userMapToken = {
+const userMapToken = {};
 
-}
-
-module.exports = { userSeedToken, userMapToken }
+module.exports = { userSeedToken, userMapToken };

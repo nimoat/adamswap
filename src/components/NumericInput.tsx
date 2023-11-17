@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Tooltip } from "antd";
+import { Input } from "antd";
 import styles from "../styles/NumericInput.module.less";
 import CurrencySelect from "./CurrencySelect";
 import CurrencySelectModal from "./CurrencySelectModal";
