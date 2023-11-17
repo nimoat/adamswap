@@ -93,6 +93,10 @@
     border: @sizeXXS + 0px solid rgb(19, 19, 19);
     background-color: rgb(27, 27, 27);
     transform: translate(-50%, -50%) rotate(90deg);
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   :global {
@@ -103,6 +107,7 @@
       padding: @sizeMS + 0px;
       line-height: 24px;
       border-radius: 16px;
+      border: none;
     }
   }
 }

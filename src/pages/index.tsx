@@ -7,18 +7,44 @@ import logo from "../assets/logo.svg";
 import { Button } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import NumericInput from "../components/NumericInput";
+import currencyMap from "@/components/currencyMap";
+import type { Currency, CurrencyV } from "@/components/currencyMap";
 
 export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
 
-  const [value, setValue] = useState("");
+  const [swapPair, setSwapPair] = useState<[CurrencyV, CurrencyV]>([
+    { ...currencyMap.ETH, value: "" },
+    { value: "" },
+  ]);
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
     setIsConnectHighlighted(false);
   };
+
+  const onCurrencySelect = (currency: Currency, index: 0 | 1 = 0) => {
+    console.log({ currency, swapPair, index });
+    if (currency.symbol === swapPair[1 - index].symbol) {
+      setSwapPair((sp) => {
+        return [sp[1], sp[0]];
+      });
+    } else {
+      setSwapPair((sp) => {
+        sp[index] = { ...currency, value: sp[index].value };
+        return [...sp];
+      });
+    }
+  };
+
+  const onClickOrder = () => {
+    setSwapPair((sp) => {
+      return [sp[1], sp[0]];
+    });
+  };
+
   return (
     <>
       <Head>
@@ -36,12 +62,7 @@ export default function Home() {
         />
         <div className={styles.header}>
           <div className={styles.logo}>
-            <Image
-              src={logo.src}
-              alt="WalletConnect Logo"
-              height="32"
-              width="203"
-            />
+            <Image src={logo.src} alt="EasySwap" height="32" width="203" />
           </div>
           <div className={styles.buttons}>
             <div
@@ -65,78 +86,38 @@ export default function Home() {
       </header>
       <main className={styles.main}>
         <div className={styles.wrapper}>
-          {/* <div className={styles.container}>
-            <h1>Next.js Starter Template</h1>
-            <div className={styles.content}>
-              <ul>
-                <li>
-                  Edit <code>pages/index.tsx</code> and save to reload.
-                </li>
-                <li>
-                  Click{" "}
-                  <span
-                    onClick={() => {
-                      setIsConnectHighlighted(!isConnectHighlighted);
-                      setIsNetworkSwitchHighlighted(false);
-                    }}
-                    className={styles.button}
-                  >
-                    Connect Wallet
-                  </span>{" "}
-                  to connect to a WalletConnect v2.0 compatible wallet.
-                </li>
-                <li>
-                  Click{" "}
-                  <span
-                    onClick={() => {
-                      setIsNetworkSwitchHighlighted(
-                        !isNetworkSwitchHighlighted
-                      );
-                      setIsConnectHighlighted(false);
-                    }}
-                    className={styles.button}
-                  >
-                    Select Network
-                  </span>{" "}
-                  to change networks.
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className={styles.footer}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              height={16}
-              width={16}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
-              />
-            </svg>
-            <a
-              href="https://docs.walletconnect.com/web3modal/react/about?utm_source=next-starter-template&utm_medium=github&utm_campaign=next-starter-template"
-              target="_blank"
-            >
-              Check out the full documentation here
-            </a>
-          </div> */}
           <div className={styles.container}>
             <div className={styles.title}>Swap</div>
-            <NumericInput tip="You pay" value={value} onChange={setValue} />
+            <NumericInput
+              tip="Pay"
+              index={0}
+              swapPair={swapPair}
+              onSelect={(e) => onCurrencySelect(e, 0)}
+              onChange={(v) =>
+                setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]])
+              }
+            />
             <div className={styles.divide}>
-              <div className={styles.swapIcon}>
+              <div className={styles.swapIcon} onClick={onClickOrder}>
                 <SwapOutlined />
               </div>
             </div>
-            <NumericInput tip="You Receive" value={value} onChange={setValue} />
-            <Button className="swap-primary-btn" type="primary" size="large">
-              Swap
+            <NumericInput
+              tip="Receive"
+              index={1}
+              swapPair={swapPair}
+              onSelect={(e) => onCurrencySelect(e, 1)}
+              onChange={(v) =>
+                setSwapPair((sp) => [sp[0], { ...sp[1], value: v }])
+              }
+            />
+            <Button
+              className="swap-primary-btn"
+              type="primary"
+              size="large"
+              disabled={swapPair.some((sp) => !sp.symbol || !sp.value)}
+            >
+              {swapPair.some((sp) => !sp.symbol) ? "Select a token" : "Swap"}
             </Button>
           </div>
         </div>

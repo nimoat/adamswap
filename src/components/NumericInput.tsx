@@ -1,47 +1,55 @@
 import React, { useState } from "react";
 import { Input, Tooltip } from "antd";
-import styles from "../styles/NumericInput.module.less"
+import styles from "../styles/NumericInput.module.less";
 import CurrencySelect from "./CurrencySelect";
-import CurrencySelectModal from './CurrencySelectModal'
+import CurrencySelectModal from "./CurrencySelectModal";
+import type { Currency, CurrencyV } from "./currencyMap";
 
 interface NumericInputProps {
   style?: React.CSSProperties;
   tip?: string;
-  value: string;
+  index: 0 | 1;
+  swapPair: [CurrencyV, CurrencyV];
   onChange: (value: string) => void;
+  onSelect: (c: Currency) => unknown | void;
 }
 
-const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
+// const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 
 const NumericInput = (props: NumericInputProps) => {
-  const { tip = "", value, onChange } = props;
+  const { tip = "", swapPair = [], index = 0, onChange } = props;
 
-  const [selectModalShow, setSelectModalShow] = useState(false)
+  const [selectModalShow, setSelectModalShow] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = e.target;
-    const reg = /^-?\d*(\.\d*)?$/;
-    if (reg.test(inputValue) || inputValue === "" || inputValue === "-") {
+    const reg = /^\d*(\.\d*)?$/;
+    if (reg.test(inputValue) || inputValue === "") {
       onChange(inputValue);
     }
   };
 
   // '.' at the end or only '-' in the input box.
-  const handleBlur = () => {
-    let valueTemp = value;
-    if (value.charAt(value.length - 1) === "." || value === "-") {
-      valueTemp = value.slice(0, -1);
+  const onHandleBlur = () => {
+    let valueTemp = String(swapPair[index]!.value);
+    if (valueTemp.charAt(valueTemp.length - 1) === ".") {
+      valueTemp = valueTemp.slice(0, -1);
     }
     onChange(valueTemp.replace(/0*(\d+)/, "$1"));
   };
 
-  const title = value ? (
-    <span className="numeric-input-title">
-      {value !== "-" ? formatNumber(Number(value)) : "-"}
-    </span>
-  ) : (
-    "Input a number"
-  );
+  const onSelect = (currency: Currency) => {
+    setSelectModalShow(false);
+    props.onSelect(currency);
+  };
+
+  // const title = value ? (
+  //   <span className="numeric-input-title">
+  //     {value !== "-" ? formatNumber(Number(value)) : "-"}
+  //   </span>
+  // ) : (
+  //   "Input a number"
+  // );
 
   return (
     <>
@@ -49,21 +57,29 @@ const NumericInput = (props: NumericInputProps) => {
         <div className="tip">{tip}</div>
         <div className="center">
           <Input
-            {...props}
+            style={props.style}
             size="large"
-            onChange={handleChange}
-            onBlur={handleBlur}
             placeholder="0"
             maxLength={16}
+            value={swapPair[index]!.value}
+            onChange={onHandleChange}
+            onBlur={onHandleBlur}
           />
-          <CurrencySelect onClick={() => setSelectModalShow(true)} />
+          <CurrencySelect
+            currency={swapPair[index]}
+            onClick={() => setSelectModalShow(true)}
+          />
         </div>
         <div className="bottom">
           <div className="bottom-left">$1.58</div>
           <div className="bottom-right">Balance: 0.008</div>
         </div>
       </div>
-      <CurrencySelectModal open={selectModalShow} onOk={() => {}} onCancel={() => setSelectModalShow(false)} />
+      <CurrencySelectModal
+        open={selectModalShow}
+        onSelect={onSelect}
+        onCancel={() => setSelectModalShow(false)}
+      />
     </>
   );
 };
