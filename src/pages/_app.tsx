@@ -5,11 +5,10 @@ import { WagmiConfig } from "wagmi";
 import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
 import {
+  zkSync,
   arbitrum,
   avalanche,
   bsc,
-  fantom,
-  gnosis,
   mainnet,
   optimism,
   polygon,
@@ -18,16 +17,7 @@ import {
 import { ConfigProvider } from "antd";
 import theme from "../theme/themeConfig";
 
-const chains = [
-  mainnet,
-  polygon,
-  avalanche,
-  arbitrum,
-  bsc,
-  optimism,
-  gnosis,
-  fantom,
-];
+const chains = [mainnet, zkSync, polygon, avalanche, arbitrum, bsc, optimism];
 
 // 1. Get projectID at https://cloud.walletconnect.com
 

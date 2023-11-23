@@ -7,11 +7,13 @@ import WBTC from "../assets/currencyLogo/WBTC.png";
 import LINK from "../assets/currencyLogo/LINK.png";
 import AAVE from "../assets/currencyLogo/AAVE.png";
 import LUSD from "../assets/currencyLogo/LUSD.png";
+import { zksERC20Addrs } from "./abi";
 
 export type Currency = {
   name: string;
   logoSrc: string;
   symbol: string;
+  address?: string;
 };
 
 export interface CurrencyV extends Partial<Currency> {
@@ -23,16 +25,19 @@ const currencyMap = {
     name: "Ether",
     logoSrc: ETH.src,
     symbol: "ETH",
+    address: zksERC20Addrs.ETH_ADDR,
   },
   WETH: {
     name: "Wrapped Ether",
     logoSrc: WETH.src,
     symbol: "WETH",
+    address: zksERC20Addrs.WETH_ADDR,
   },
   USDC: {
     name: "Bridged USDC",
     logoSrc: USDC.src,
     symbol: "USDC",
+    address: zksERC20Addrs.USDC_ADDR,
   },
   USDT: {
     name: "Tether USD",

@@ -1,6 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
-import styles from "@/styles/Home.module.less";
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import React, { useState } from "react";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
@@ -9,6 +13,15 @@ import { SwapOutlined } from "@ant-design/icons";
 import NumericInput from "../components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
+import {
+  ETH_USDC_POOL,
+  mavPoolAdress,
+  mavPoolCalculateAbi,
+} from "@/components/abi";
+import { useDebounceFn } from "ahooks";
+import { useAccount } from "wagmi";
+
+import styles from "@/styles/Home.module.less";
 
 export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
@@ -19,6 +32,39 @@ export default function Home() {
     { ...currencyMap.ETH, value: "" },
     { value: "" },
   ]);
+
+  const { address } = useAccount();
+
+  console.log({ address });
+
+  // const debouncedInputValue = useDebounce(swapPair[0]?.value, { wait: 500 });
+
+  // const debouncedOutputValue = useDebounce(swapPair[1]?.value, { wait: 500 });
+
+  const { config } = usePrepareContractWrite({
+    address: mavPoolAdress,
+    abi: mavPoolCalculateAbi,
+    functionName: "calculateSwap",
+    args: [
+      ETH_USDC_POOL,
+      Number(swapPair[0]?.value),
+      (swapPair[0]?.address || "0") < (swapPair[1]?.address || "0"),
+      false,
+      0,
+    ],
+    // enabled: true,
+  });
+
+  const { data, write } = useContractWrite(config);
+
+  // const { isLoading, isSuccess } =
+  useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  // useEffect(() => {
+  //   write?.();
+  // }, [debouncedInputValue]);
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
@@ -43,6 +89,27 @@ export default function Home() {
     setSwapPair((sp) => {
       return [sp[1], sp[0]];
     });
+  };
+
+  const {
+    run: debounceInputAmountChange,
+    // cancel,
+    // flush,
+  } = useDebounceFn(
+    () => {
+      // setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]]);
+      write?.();
+    },
+    {
+      wait: 500,
+    }
+  );
+
+  const onInputAmountChange = (v: string) => {
+    setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]]);
+    if (v && v! == swapPair[0].value && swapPair.every((sp) => !!sp.address)) {
+      debounceInputAmountChange();
+    }
   };
 
   return (
@@ -93,9 +160,7 @@ export default function Home() {
               index={0}
               swapPair={swapPair}
               onSelect={(e) => onCurrencySelect(e, 0)}
-              onChange={(v) =>
-                setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]])
-              }
+              onChange={onInputAmountChange}
             />
             <div className={styles.divide}>
               <div className={styles.swapIcon} onClick={onClickOrder}>
