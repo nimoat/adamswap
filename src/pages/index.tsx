@@ -1,11 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
-import React, { useState } from "react";
+// import {
+//   usePrepareContractWrite,
+//   // useContractWrite,
+//   // useWaitForTransaction,
+// } from "wagmi";
+import React, { useState, useEffect } from "react";
+import Web3 from "web3";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
 import { Button } from "antd";
@@ -13,13 +14,15 @@ import { SwapOutlined } from "@ant-design/icons";
 import NumericInput from "../components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
-import {
-  ETH_USDC_POOL,
-  mavPoolAdress,
-  mavPoolCalculateAbi,
-} from "@/components/abi";
+// import {
+//   ETH_USDC_POOL,
+//   mavPoolAdress,
+//   mavPoolCalculateAbi,
+// } from "@/components/abi";
 import { useDebounceFn } from "ahooks";
-import { useAccount } from "wagmi";
+// import { useAccount } from "wagmi";
+import { ChainId } from "iziswap-sdk/lib/base/types";
+import { searchPath } from "../components/onchainUtils";
 
 import styles from "@/styles/Home.module.less";
 
@@ -33,34 +36,31 @@ export default function Home() {
     { value: "" },
   ]);
 
-  const { address } = useAccount();
+  useEffect(() => {}, []);
 
-  console.log({ address });
+  // const { address } = useAccount();
 
-  // const debouncedInputValue = useDebounce(swapPair[0]?.value, { wait: 500 });
+  // const { config } =
+  // usePrepareContractWrite({
+  //   address: mavPoolAdress,
+  //   abi: mavPoolCalculateAbi,
+  //   functionName: "calculateSwap",
+  //   args: [
+  //     ETH_USDC_POOL,
+  //     Number(swapPair[0]?.value),
+  //     (swapPair[0]?.address || "0") < (swapPair[1]?.address || "0"),
+  //     false,
+  //     0,
+  //   ],
+  //   // enabled: true,
+  // });
 
-  // const debouncedOutputValue = useDebounce(swapPair[1]?.value, { wait: 500 });
-
-  const { config } = usePrepareContractWrite({
-    address: mavPoolAdress,
-    abi: mavPoolCalculateAbi,
-    functionName: "calculateSwap",
-    args: [
-      ETH_USDC_POOL,
-      Number(swapPair[0]?.value),
-      (swapPair[0]?.address || "0") < (swapPair[1]?.address || "0"),
-      false,
-      0,
-    ],
-    // enabled: true,
-  });
-
-  const { data, write } = useContractWrite(config);
+  // const { data, write } = useContractWrite(config);
 
   // const { isLoading, isSuccess } =
-  useWaitForTransaction({
-    hash: data?.hash,
-  });
+  // useWaitForTransaction({
+  //   hash: data?.hash,
+  // });
 
   // useEffect(() => {
   //   write?.();
@@ -96,9 +96,30 @@ export default function Home() {
     // cancel,
     // flush,
   } = useDebounceFn(
-    () => {
+    (value: string) => {
       // setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]]);
-      write?.();
+      // write?.();
+      searchPath(
+        {
+          address: swapPair[0].address!,
+          symbol: swapPair[0].symbol!,
+          chainId: ChainId.ScrollTestL2,
+          decimal: 18,
+        },
+        {
+          address: swapPair[1].address!,
+          symbol: swapPair[1].symbol!,
+          chainId: ChainId.ScrollTestL2,
+          decimal: 18,
+        },
+        Web3.utils.toWei(value, "ether")
+      ).then((res) => {
+        // console.log(res);
+        if (res.amount) {
+          const outputValue = Web3.utils.fromWei(res.amount, "ether");
+          setSwapPair((sp) => [sp[0], { ...sp[1], value: outputValue }]);
+        }
+      });
     },
     {
       wait: 500,
@@ -108,9 +129,11 @@ export default function Home() {
   const onInputAmountChange = (v: string) => {
     setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]]);
     if (v && v! == swapPair[0].value && swapPair.every((sp) => !!sp.address)) {
-      debounceInputAmountChange();
+      debounceInputAmountChange(v);
     }
   };
+
+  const onClickSwap = () => {};
 
   return (
     <>
@@ -181,6 +204,7 @@ export default function Home() {
               type="primary"
               size="large"
               disabled={swapPair.some((sp) => !sp.symbol || !sp.value)}
+              onClick={onClickSwap}
             >
               {swapPair.some((sp) => !sp.symbol) ? "Select a token" : "Swap"}
             </Button>

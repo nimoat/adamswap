@@ -17,12 +17,14 @@
 		"ahooks": "^3.7.8",
 		"antd": "^5.10.0",
 		"eslint-config-next": "13.5.4",
+		"iziswap-sdk": "^1.4.2",
 		"next": "13.5.4",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"typescript": "*",
 		"viem": "^1.13.1",
-		"wagmi": "^1.4.2"
+		"wagmi": "^1.4.2",
+		"web3": "^1.7.3"
 	},
 	"devDependencies": {
 		"@ant-design/compatible": "^5.1.2",

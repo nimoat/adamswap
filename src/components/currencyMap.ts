@@ -7,7 +7,7 @@ import WBTC from "../assets/currencyLogo/WBTC.png";
 import LINK from "../assets/currencyLogo/LINK.png";
 import AAVE from "../assets/currencyLogo/AAVE.png";
 import LUSD from "../assets/currencyLogo/LUSD.png";
-import { zksERC20Addrs } from "./abi";
+import { ERC20Addrs } from "./constant";
 
 export type Currency = {
   name: string;
@@ -25,24 +25,28 @@ const currencyMap = {
     name: "Ether",
     logoSrc: ETH.src,
     symbol: "ETH",
-    address: zksERC20Addrs.ETH_ADDR,
+    address: ERC20Addrs.ETH_ADDR,
+    decimal: 18,
   },
   WETH: {
     name: "Wrapped Ether",
     logoSrc: WETH.src,
     symbol: "WETH",
-    address: zksERC20Addrs.WETH_ADDR,
-  },
-  USDC: {
-    name: "Bridged USDC",
-    logoSrc: USDC.src,
-    symbol: "USDC",
-    address: zksERC20Addrs.USDC_ADDR,
+    address: ERC20Addrs.WETH_ADDR,
+    decimal: 18,
   },
   USDT: {
     name: "Tether USD",
     logoSrc: USDT.src,
     symbol: "USDT",
+    address: ERC20Addrs.USDT_ADDR,
+    decimal: 18,
+  },
+  USDC: {
+    name: "Bridged USDC",
+    logoSrc: USDC.src,
+    symbol: "USDC",
+    decimal: 18,
   },
   DAI: {
     name: "Dai Stablecoin",
