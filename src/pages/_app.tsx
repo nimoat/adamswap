@@ -4,20 +4,12 @@ import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
 import { WagmiConfig } from "wagmi";
 import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
-import {
-  zkSync,
-  arbitrum,
-  avalanche,
-  bsc,
-  mainnet,
-  optimism,
-  polygon,
-} from "wagmi/chains";
+import { zkSync, mainnet, scrollSepolia } from "wagmi/chains";
 
 import { ConfigProvider } from "antd";
 import theme from "../theme/themeConfig";
 
-const chains = [mainnet, zkSync, polygon, avalanche, arbitrum, bsc, optimism];
+const chains = [mainnet, zkSync, scrollSepolia];
 
 // 1. Get projectID at https://cloud.walletconnect.com
 

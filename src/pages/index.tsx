@@ -1,10 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-// import {
-//   usePrepareContractWrite,
-//   // useContractWrite,
-//   // useWaitForTransaction,
-// } from "wagmi";
+import { useContractWrite, useWaitForTransaction } from "wagmi";
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import favicon from "../assets/favicon.ico";
@@ -14,14 +10,12 @@ import { SwapOutlined } from "@ant-design/icons";
 import NumericInput from "../components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
-// import {
-//   ETH_USDC_POOL,
-//   mavPoolAdress,
-//   mavPoolCalculateAbi,
-// } from "@/components/abi";
+import { swapContractAddress, swapAbi } from "@/components/constant";
 import { useDebounceFn } from "ahooks";
-// import { useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import { ChainId } from "iziswap-sdk/lib/base/types";
+import { getTokenChainPath } from "iziswap-sdk/lib/base";
+import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import { searchPath } from "../components/onchainUtils";
 
 import styles from "@/styles/Home.module.less";
@@ -35,36 +29,35 @@ export default function Home() {
     { ...currencyMap.ETH, value: "" },
     { value: "" },
   ]);
+  const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
 
   useEffect(() => {}, []);
 
-  // const { address } = useAccount();
+  const { address } = useAccount();
 
-  // const { config } =
-  // usePrepareContractWrite({
-  //   address: mavPoolAdress,
-  //   abi: mavPoolCalculateAbi,
-  //   functionName: "calculateSwap",
-  //   args: [
-  //     ETH_USDC_POOL,
-  //     Number(swapPair[0]?.value),
-  //     (swapPair[0]?.address || "0") < (swapPair[1]?.address || "0"),
-  //     false,
-  //     0,
-  //   ],
-  //   // enabled: true,
-  // });
+  // 上链前
+  const { isLoading, isSuccess, data, error, write } = useContractWrite({
+    abi: swapAbi,
+    functionName: "swapAmount",
+    address: swapContractAddress,
+    // onError: (error) => {
+    //   console.log("Error", error);
+    // },
+    // onSuccess: (data) => {
+    //   console.log("data", data.hash);
+    // },
+  });
 
-  // const { data, write } = useContractWrite(config);
+  // 上链后
+  const {
+    isLoading: isLoading2,
+    isSuccess: isSuccess2,
+    error: error2,
+  } = useWaitForTransaction({
+    hash: data?.hash,
+  });
 
-  // const { isLoading, isSuccess } =
-  // useWaitForTransaction({
-  //   hash: data?.hash,
-  // });
-
-  // useEffect(() => {
-  //   write?.();
-  // }, [debouncedInputValue]);
+  console.log({ isLoading, isSuccess, error, isLoading2, isSuccess2, error2 });
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
@@ -72,7 +65,7 @@ export default function Home() {
   };
 
   const onCurrencySelect = (currency: Currency, index: 0 | 1 = 0) => {
-    console.log({ currency, swapPair, index });
+    // console.log({ currency, swapPair, index });
     if (currency.symbol === swapPair[1 - index].symbol) {
       setSwapPair((sp) => {
         return [sp[1], sp[0]];
@@ -97,8 +90,6 @@ export default function Home() {
     // flush,
   } = useDebounceFn(
     (value: string) => {
-      // setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]]);
-      // write?.();
       searchPath(
         {
           address: swapPair[0].address!,
@@ -114,7 +105,7 @@ export default function Home() {
         },
         Web3.utils.toWei(value, "ether")
       ).then((res) => {
-        // console.log(res);
+        setSearchPathInfo(res);
         if (res.amount) {
           const outputValue = Web3.utils.fromWei(res.amount, "ether");
           setSwapPair((sp) => [sp[0], { ...sp[1], value: outputValue }]);
@@ -133,7 +124,24 @@ export default function Home() {
     }
   };
 
-  const onClickSwap = () => {};
+  const onClickSwap = () => {
+    write?.({
+      args: [
+        {
+          path: getTokenChainPath(
+            searchPathInfo!.path.tokenChain,
+            searchPathInfo!.path.feeContractNumber
+          ), //pathWithFee
+          recipient: address,
+          amount:
+            BigInt(Number(swapPair[0]?.value) * 10 ** 5) * 10n ** (18n - 5n),
+          minAcquired: (BigInt(searchPathInfo!.amount) * 95n) / 100n,
+          deadline: Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
+        },
+      ],
+      // value: 0,
+    });
+  };
 
   return (
     <>
