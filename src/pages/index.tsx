@@ -5,9 +5,12 @@ import {
   useContractWrite,
   useWaitForTransaction,
   useContractRead,
+  useAccount,
+  useNetwork,
 } from "wagmi";
-import React, { useState } from "react";
-import Web3 from "web3";
+import { parseUnits, formatUnits } from "viem";
+import { fetchBalance } from "@wagmi/core";
+import React, { useEffect, useMemo, useState } from "react";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
 import { Button } from "antd";
@@ -17,8 +20,6 @@ import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
 import { swapContractAddress, swapAbi } from "@/components/constant";
 import { useDebounceFn } from "ahooks";
-import { useAccount } from "wagmi";
-import { ChainId } from "iziswap-sdk/lib/base/types";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import { searchPath } from "../components/onchainUtils";
@@ -29,14 +30,50 @@ export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
+  const [fetchedCurrencyMap, setFetchedCurrencyMap] =
+    useState<Record<string, Currency>>();
 
   const [swapPair, setSwapPair] = useState<[CurrencyV, CurrencyV]>([
-    { ...currencyMap.ETH, value: "", bnValue: 0n },
-    { value: "", bnValue: 0n },
+    { ...currencyMap.ETH, value: 0n, formatted: "" },
+    { value: 0n, formatted: "" },
   ]);
   const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
 
-  const { address } = useAccount();
+  const { address: accountAddress, isConnected } = useAccount();
+  const { chain: connectChain, chains } = useNetwork();
+
+  useEffect(() => {
+    if (isConnected && chains.some((item) => item.id === connectChain!.id)) {
+      Promise.all(
+        Object.entries(currencyMap).map(([key, map]) =>
+          fetchBalance({
+            address: accountAddress as `0x${string}`,
+            token: map.address as `0x${string}`,
+          }).then(({ decimals, symbol, formatted, value }) => [
+            key,
+            {
+              ...map,
+              decimals,
+              symbol,
+              banlanceFormatted: formatted,
+              banlanceValue: value,
+            },
+          ])
+        )
+      ).then((res) => {
+        const _fetchedCurrencyMap = Object.fromEntries(res);
+        setFetchedCurrencyMap(_fetchedCurrencyMap);
+        setSwapPair([
+          { ..._fetchedCurrencyMap.ETH, value: 0n, formatted: "" },
+          { value: 0n, formatted: "" },
+        ]);
+      });
+    }
+  }, [accountAddress, isConnected, connectChain, chains]);
+
+  const isPrepared = useMemo(() => !!fetchedCurrencyMap, [fetchedCurrencyMap]);
+
+  // console.log({ isPrepared, fetchedCurrencyMap });
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
@@ -44,7 +81,6 @@ export default function Home() {
   };
 
   const onCurrencySelect = (currency: Currency, index: 0 | 1 = 0) => {
-    // console.log({ currency, swapPair, index });
     if (currency.symbol === swapPair[1 - index].symbol) {
       setSwapPair((sp) => {
         return [sp[1], sp[0]];
@@ -54,8 +90,7 @@ export default function Home() {
         sp[index] = {
           ...currency,
           value: sp[index].value,
-          bnValue:
-            BigInt(Number(sp[index].value) * 10 ** 5) * 10n ** (18n - 5n),
+          formatted: sp[index].formatted,
         };
         return [...sp];
       });
@@ -68,52 +103,56 @@ export default function Home() {
     });
   };
 
+  console.log({ swapPair });
+
   const onInputAmountChange = (v: string) => {
     setSwapPair((sp) => [
       {
         ...sp[0],
-        value: v,
-        bnValue: BigInt(Number(v) * 10 ** 5) * 10n ** (18n - 5n),
+        value: parseUnits(v, sp[0].decimals!),
+        formatted: v,
       },
       sp[1],
     ]);
-    if (v && v! == swapPair[0].value && swapPair.every((sp) => !!sp.address)) {
+    if (
+      v &&
+      v! == swapPair[0].formatted &&
+      swapPair.every((sp) => !!sp.address)
+    ) {
       debounceInputAmountChange(v);
     }
   };
 
-  const {
-    run: debounceInputAmountChange,
-    // cancel,
-    // flush,
-  } = useDebounceFn(
+  const { run: debounceInputAmountChange } = useDebounceFn(
     (value: string) => {
       searchPath(
         {
           address: swapPair[0].address!,
           symbol: swapPair[0].symbol!,
-          chainId: ChainId.ScrollTestL2,
+          chainId: connectChain!.id,
           decimal: 18,
         },
         {
           address: swapPair[1].address!,
           symbol: swapPair[1].symbol!,
-          chainId: ChainId.ScrollTestL2,
+          chainId: connectChain!.id,
           decimal: 18,
         },
-        Web3.utils.toWei(value, "ether")
+        parseUnits(value, swapPair[0].decimals!).toString(),
+        connectChain!
       ).then((res) => {
         setSearchPathInfo(res);
         if (res.amount) {
-          const outputValue = Web3.utils.fromWei(res.amount, "ether");
+          const outputValue = formatUnits(
+            BigInt(res.amount),
+            swapPair[1].decimals!
+          );
           setSwapPair((sp) => [
             sp[0],
             {
               ...sp[1],
-              value: outputValue,
-              // TM_TODO
-              // bnValue:
-              //   BigInt(Number(outputValue) * 10 ** 5) * 10n ** (18n - 5n),
+              value: BigInt(res.amount),
+              formatted: outputValue,
             },
           ]);
         }
@@ -126,13 +165,11 @@ export default function Home() {
 
   // 获取erc20 allowance
   const { data: allowanceData, refetch } = useContractRead({
-    address: swapPair[0].address as `0x${string}`,
-    abi: erc20ABI,
+    abi: isPrepared ? erc20ABI : undefined,
     functionName: "allowance",
-    args: [address!, swapContractAddress],
+    address: swapPair[0].address as `0x${string}`,
+    args: [accountAddress!, swapContractAddress],
   });
-
-  console.log({ allowanceData });
 
   // approve上链前
   const { data: approveData, write: approveWrites } = useContractWrite({
@@ -149,7 +186,7 @@ export default function Home() {
     hash: approveData?.hash,
     onSuccess: async () => {
       const { data: allowance } = await refetch();
-      if (allowance && allowance >= swapPair[0].bnValue) {
+      if (allowance && allowance >= swapPair[0].value) {
         writeSwap();
       }
     },
@@ -187,7 +224,7 @@ export default function Home() {
             searchPathInfo!.path.tokenChain,
             searchPathInfo!.path.feeContractNumber
           ), //pathWithFee
-          recipient: address,
+          recipient: accountAddress,
           amount:
             BigInt(Number(swapPair[0]?.value) * 10 ** 5) * 10n ** (18n - 5n),
           minAcquired: (BigInt(searchPathInfo!.amount) * 95n) / 100n,
@@ -200,10 +237,9 @@ export default function Home() {
 
   const onClickSwap = () => {
     // 检查授权
-    console.log({ bnValue: swapPair[0].bnValue });
-    if (!allowanceData || allowanceData < swapPair[0].bnValue) {
+    if (!allowanceData || allowanceData < swapPair[0].value) {
       approveWrites?.({
-        args: [swapContractAddress, swapPair[0].bnValue],
+        args: [swapContractAddress, swapPair[0].value],
       });
     } else {
       writeSwap();
@@ -254,6 +290,7 @@ export default function Home() {
           <div className={styles.container}>
             <div className={styles.title}>Swap</div>
             <NumericInput
+              currencyMap={fetchedCurrencyMap}
               tip="Pay"
               index={0}
               swapPair={swapPair}
@@ -266,19 +303,27 @@ export default function Home() {
               </div>
             </div>
             <NumericInput
+              currencyMap={fetchedCurrencyMap}
               tip="Receive"
               index={1}
               swapPair={swapPair}
               onSelect={(e) => onCurrencySelect(e, 1)}
               onChange={(v) =>
-                setSwapPair((sp) => [sp[0], { ...sp[1], value: v }])
+                setSwapPair((sp) => [
+                  sp[0],
+                  {
+                    ...sp[1],
+                    value: parseUnits(v, sp[1].decimals!),
+                    formatted: v,
+                  },
+                ])
               }
             />
             <Button
               className="swap-primary-btn"
               type="primary"
               size="large"
-              disabled={swapPair.some((sp) => !sp.symbol || !sp.value)}
+              disabled={swapPair.some((sp) => !sp.symbol || !sp.formatted)}
               onClick={onClickSwap}
             >
               {swapPair.some((sp) => !sp.symbol) ? "Select a token" : "Swap"}

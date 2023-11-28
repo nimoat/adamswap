@@ -1,18 +1,16 @@
-import "@/styles/globals.css";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-
 import { WagmiConfig } from "wagmi";
 import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
-import { zkSync, mainnet, scrollSepolia } from "wagmi/chains";
-
+import { scrollSepolia } from "wagmi/chains";
 import { ConfigProvider } from "antd";
 import theme from "../theme/themeConfig";
 
-const chains = [mainnet, zkSync, scrollSepolia];
+import "@/styles/globals.css";
+
+const chains = [scrollSepolia];
 
 // 1. Get projectID at https://cloud.walletconnect.com
-
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 const metadata = {
@@ -32,6 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     setReady(true);
   }, []);
+
   return (
     <>
       {ready ? (

@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { Modal, Input, Divider } from "antd";
 import Image from "next/image";
 import { SearchOutlined } from "@ant-design/icons";
-import currencyMap from "./currencyMap";
 import type { Currency } from "./currencyMap";
 
 import styles from "../styles/CurrencySelectModal.module.less";
 
 interface CurrencySelectModalProps {
+  currencyMap: Record<string, Currency>;
   open: boolean;
   onSelect: (c: Currency) => unknown | void;
   onCancel: () => unknown | void;
 }
 
 export default function CurrencySelectModal(props: CurrencySelectModalProps) {
-  const { open, onSelect, onCancel } = props;
+  const { currencyMap, open, onSelect, onCancel } = props;
 
   const [filtedCurrencyMap, setFiltedCurrencyMap] = useState(
     Object.values(currencyMap)
@@ -25,7 +25,7 @@ export default function CurrencySelectModal(props: CurrencySelectModalProps) {
     const _filtedCurrencyMap = Object.values(currencyMap).filter(
       (item) =>
         item.name.toLowerCase().indexOf(_value) >= 0 ||
-        item.symbol.toLowerCase().indexOf(_value) >= 0
+        item.symbol!.toLowerCase().indexOf(_value) >= 0
     );
     setFiltedCurrencyMap(_filtedCurrencyMap);
   };
@@ -74,7 +74,7 @@ export default function CurrencySelectModal(props: CurrencySelectModalProps) {
               <div className="name">{currency.name}</div>
               <div className="symbol">{currency.symbol}</div>
             </div>
-            <div className="balance">77.77</div>
+            <div className="balance">{currency.banlanceFormatted}</div>
           </div>
         ))}
       </div>

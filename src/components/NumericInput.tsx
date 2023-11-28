@@ -6,6 +6,7 @@ import CurrencySelectModal from "./CurrencySelectModal";
 import type { Currency, CurrencyV } from "./currencyMap";
 
 interface NumericInputProps {
+  currencyMap: Record<string, Currency> | undefined;
   style?: React.CSSProperties;
   tip?: string;
   index: 0 | 1;
@@ -31,7 +32,7 @@ const NumericInput = (props: NumericInputProps) => {
 
   // '.' at the end or only '-' in the input box.
   const onHandleBlur = () => {
-    let valueTemp = String(swapPair[index]!.value);
+    let valueTemp = String(swapPair[index]!.formatted);
     if (valueTemp.charAt(valueTemp.length - 1) === ".") {
       valueTemp = valueTemp.slice(0, -1);
     }
@@ -61,7 +62,7 @@ const NumericInput = (props: NumericInputProps) => {
             size="large"
             placeholder="0"
             maxLength={16}
-            value={swapPair[index]!.value}
+            value={swapPair[index]!.formatted}
             onChange={onHandleChange}
             onBlur={onHandleBlur}
           />
@@ -72,14 +73,19 @@ const NumericInput = (props: NumericInputProps) => {
         </div>
         <div className="bottom">
           <div className="bottom-left">$1.58</div>
-          <div className="bottom-right">Balance: 0.008</div>
+          <div className="bottom-right">
+            Balance: {swapPair[index]!.banlanceFormatted}
+          </div>
         </div>
       </div>
-      <CurrencySelectModal
-        open={selectModalShow}
-        onSelect={onSelect}
-        onCancel={() => setSelectModalShow(false)}
-      />
+      {props.currencyMap && (
+        <CurrencySelectModal
+          currencyMap={props.currencyMap}
+          open={selectModalShow}
+          onSelect={onSelect}
+          onCancel={() => setSelectModalShow(false)}
+        />
+      )}
     </>
   );
 };
