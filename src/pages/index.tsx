@@ -1,7 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useContractWrite, useWaitForTransaction } from "wagmi";
-import React, { useState, useEffect } from "react";
+import {
+  erc20ABI,
+  useContractWrite,
+  useWaitForTransaction,
+  useContractRead,
+} from "wagmi";
+import React, { useState } from "react";
 import Web3 from "web3";
 import favicon from "../assets/favicon.ico";
 import logo from "../assets/logo.svg";
@@ -26,38 +31,12 @@ export default function Home() {
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
 
   const [swapPair, setSwapPair] = useState<[CurrencyV, CurrencyV]>([
-    { ...currencyMap.ETH, value: "" },
-    { value: "" },
+    { ...currencyMap.ETH, value: "", bnValue: 0n },
+    { value: "", bnValue: 0n },
   ]);
   const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
 
-  useEffect(() => {}, []);
-
   const { address } = useAccount();
-
-  // 上链前
-  const { isLoading, isSuccess, data, error, write } = useContractWrite({
-    abi: swapAbi,
-    functionName: "swapAmount",
-    address: swapContractAddress,
-    // onError: (error) => {
-    //   console.log("Error", error);
-    // },
-    // onSuccess: (data) => {
-    //   console.log("data", data.hash);
-    // },
-  });
-
-  // 上链后
-  const {
-    isLoading: isLoading2,
-    isSuccess: isSuccess2,
-    error: error2,
-  } = useWaitForTransaction({
-    hash: data?.hash,
-  });
-
-  console.log({ isLoading, isSuccess, error, isLoading2, isSuccess2, error2 });
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
@@ -72,7 +51,12 @@ export default function Home() {
       });
     } else {
       setSwapPair((sp) => {
-        sp[index] = { ...currency, value: sp[index].value };
+        sp[index] = {
+          ...currency,
+          value: sp[index].value,
+          bnValue:
+            BigInt(Number(sp[index].value) * 10 ** 5) * 10n ** (18n - 5n),
+        };
         return [...sp];
       });
     }
@@ -82,6 +66,20 @@ export default function Home() {
     setSwapPair((sp) => {
       return [sp[1], sp[0]];
     });
+  };
+
+  const onInputAmountChange = (v: string) => {
+    setSwapPair((sp) => [
+      {
+        ...sp[0],
+        value: v,
+        bnValue: BigInt(Number(v) * 10 ** 5) * 10n ** (18n - 5n),
+      },
+      sp[1],
+    ]);
+    if (v && v! == swapPair[0].value && swapPair.every((sp) => !!sp.address)) {
+      debounceInputAmountChange(v);
+    }
   };
 
   const {
@@ -108,7 +106,16 @@ export default function Home() {
         setSearchPathInfo(res);
         if (res.amount) {
           const outputValue = Web3.utils.fromWei(res.amount, "ether");
-          setSwapPair((sp) => [sp[0], { ...sp[1], value: outputValue }]);
+          setSwapPair((sp) => [
+            sp[0],
+            {
+              ...sp[1],
+              value: outputValue,
+              // TM_TODO
+              // bnValue:
+              //   BigInt(Number(outputValue) * 10 ** 5) * 10n ** (18n - 5n),
+            },
+          ]);
         }
       });
     },
@@ -117,14 +124,62 @@ export default function Home() {
     }
   );
 
-  const onInputAmountChange = (v: string) => {
-    setSwapPair((sp) => [{ ...sp[0], value: v }, sp[1]]);
-    if (v && v! == swapPair[0].value && swapPair.every((sp) => !!sp.address)) {
-      debounceInputAmountChange(v);
-    }
-  };
+  // 获取erc20 allowance
+  const { data: allowanceData, refetch } = useContractRead({
+    address: swapPair[0].address as `0x${string}`,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [address!, swapContractAddress],
+  });
 
-  const onClickSwap = () => {
+  console.log({ allowanceData });
+
+  // approve上链前
+  const { data: approveData, write: approveWrites } = useContractWrite({
+    abi: erc20ABI,
+    functionName: "approve",
+    address: swapPair[0].address as `0x${string}`,
+    // onError: (error) => {
+    //   console.log("Error", error);
+    // },
+  });
+
+  // approve上链后
+  useWaitForTransaction({
+    hash: approveData?.hash,
+    onSuccess: async () => {
+      const { data: allowance } = await refetch();
+      if (allowance && allowance >= swapPair[0].bnValue) {
+        writeSwap();
+      }
+    },
+  });
+
+  // swap上链前
+  const { isLoading, isSuccess, data, error, write } = useContractWrite({
+    abi: swapAbi,
+    functionName: "swapAmount",
+    address: swapContractAddress,
+    // onError: (error) => {
+    //   console.log("Error", error);
+    // },
+    // onSuccess: (data) => {
+    //   console.log("data", data.hash);
+    // },
+  });
+
+  // swap上链后
+  const {
+    isLoading: isLoading2,
+    isSuccess: isSuccess2,
+    error: error2,
+  } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  console.log({ isLoading, isSuccess, error, isLoading2, isSuccess2, error2 });
+
+  const writeSwap = () => {
     write?.({
       args: [
         {
@@ -141,6 +196,18 @@ export default function Home() {
       ],
       // value: 0,
     });
+  };
+
+  const onClickSwap = () => {
+    // 检查授权
+    console.log({ bnValue: swapPair[0].bnValue });
+    if (!allowanceData || allowanceData < swapPair[0].bnValue) {
+      approveWrites?.({
+        args: [swapContractAddress, swapPair[0].bnValue],
+      });
+    } else {
+      writeSwap();
+    }
   };
 
   return (

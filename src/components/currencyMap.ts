@@ -18,6 +18,7 @@ export type Currency = {
 
 export interface CurrencyV extends Partial<Currency> {
   value: string;
+  bnValue: bigint;
 }
 
 const currencyMap = {
