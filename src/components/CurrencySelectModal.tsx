@@ -3,6 +3,7 @@ import { Modal, Input, Divider } from "antd";
 import Image from "next/image";
 import { SearchOutlined } from "@ant-design/icons";
 import type { Currency } from "./currencyMap";
+import { getNFloatNumber } from "./utils";
 
 import styles from "../styles/CurrencySelectModal.module.less";
 
@@ -74,7 +75,9 @@ export default function CurrencySelectModal(props: CurrencySelectModalProps) {
               <div className="name">{currency.name}</div>
               <div className="symbol">{currency.symbol}</div>
             </div>
-            <div className="balance">{currency.banlanceFormatted}</div>
+            <div className="balance">
+              {getNFloatNumber(currency.banlanceFormatted)}
+            </div>
           </div>
         ))}
       </div>

@@ -11,18 +11,19 @@ import {
 import { parseUnits, formatUnits } from "viem";
 import { fetchBalance } from "@wagmi/core";
 import React, { useEffect, useMemo, useState } from "react";
-import favicon from "../assets/favicon.ico";
-import logo from "../assets/logo.svg";
+import favicon from "@/assets/favicon.ico";
+import logo from "@/assets/logo.svg";
 import { Button } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
-import NumericInput from "../components/NumericInput";
+import NumericInput from "@/components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
 import { swapContractAddress, swapAbi } from "@/components/constant";
 import { useDebounceFn } from "ahooks";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
-import { searchPath } from "../components/onchainUtils";
+import { searchPath } from "@/components/onchainUtils";
+import { getNFloatNumber } from "@/components/utils";
 
 import styles from "@/styles/Home.module.less";
 
@@ -103,8 +104,6 @@ export default function Home() {
     });
   };
 
-  console.log({ swapPair });
-
   const onInputAmountChange = (v: string) => {
     setSwapPair((sp) => [
       {
@@ -152,7 +151,7 @@ export default function Home() {
             {
               ...sp[1],
               value: BigInt(res.amount),
-              formatted: outputValue,
+              formatted: getNFloatNumber(outputValue, 5),
             },
           ]);
         }
@@ -225,8 +224,7 @@ export default function Home() {
             searchPathInfo!.path.feeContractNumber
           ), //pathWithFee
           recipient: accountAddress,
-          amount:
-            BigInt(Number(swapPair[0]?.value) * 10 ** 5) * 10n ** (18n - 5n),
+          amount: swapPair[0]?.value,
           minAcquired: (BigInt(searchPathInfo!.amount) * 95n) / 100n,
           deadline: Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
         },

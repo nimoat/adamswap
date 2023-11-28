@@ -4,6 +4,7 @@ import styles from "../styles/NumericInput.module.less";
 import CurrencySelect from "./CurrencySelect";
 import CurrencySelectModal from "./CurrencySelectModal";
 import type { Currency, CurrencyV } from "./currencyMap";
+import { getNFloatNumber } from "./utils";
 
 interface NumericInputProps {
   currencyMap: Record<string, Currency> | undefined;
@@ -74,7 +75,8 @@ const NumericInput = (props: NumericInputProps) => {
         <div className="bottom">
           <div className="bottom-left">$1.58</div>
           <div className="bottom-right">
-            Balance: {swapPair[index]!.banlanceFormatted}
+            {getNFloatNumber(swapPair[index]!.banlanceFormatted) !== "0" &&
+              "Balance:" + getNFloatNumber(swapPair[index]!.banlanceFormatted)}
           </div>
         </div>
       </div>
