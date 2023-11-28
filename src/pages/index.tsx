@@ -27,7 +27,25 @@ import { getNFloatNumber } from "@/components/utils";
 
 import styles from "@/styles/Home.module.less";
 
-export default function Home() {
+type PriceInfo = {
+  is_success: boolean;
+  data: Record<string, number>;
+  is_idempotent: boolean;
+  error_code?: string;
+  error_msg?: string;
+  total: number;
+};
+
+export const getStaticProps = async () => {
+  const res = await fetch(
+    "https://api.izumi.finance/api/v1/token_info/price_info/?t=USDC&t=ETH&t=WETH&t=USDT&t=iZi&t=BUSD&t=WBNB&t=iUSD&t=WBNB&t=BNB"
+  );
+  const repo = await res.json();
+  return { props: { priceInfo: repo } };
+};
+
+export default function Home(props: { priceInfo: PriceInfo }) {
+  console.log({ props });
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
