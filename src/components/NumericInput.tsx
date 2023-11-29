@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "antd";
 import styles from "../styles/NumericInput.module.less";
 import CurrencySelect from "./CurrencySelect";
 import CurrencySelectModal from "./CurrencySelectModal";
 import type { Currency, CurrencyV } from "./currencyMap";
-import { getNFloatNumber } from "./utils";
+import { PriceInfo, getNFloatNumber } from "./utils";
 
 interface NumericInputProps {
   currencyMap: Record<string, Currency> | undefined;
   style?: React.CSSProperties;
   tip?: string;
   index: 0 | 1;
+  priceInfo: PriceInfo;
   swapPair: [CurrencyV, CurrencyV];
   onChange: (value: string) => void;
   onSelect: (c: Currency) => unknown | void;
@@ -19,9 +20,22 @@ interface NumericInputProps {
 // const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 
 const NumericInput = (props: NumericInputProps) => {
-  const { tip = "", swapPair = [], index = 0, onChange } = props;
+  const { tip = "", swapPair = [], index = 0, priceInfo, onChange } = props;
 
   const [selectModalShow, setSelectModalShow] = useState(false);
+
+  const valueInUSD = useMemo(() => {
+    if (
+      swapPair[index]?.symbol &&
+      swapPair[index]?.formatted &&
+      priceInfo.data[swapPair[index].symbol]
+    ) {
+      return getNFloatNumber(
+        Number(swapPair[index].formatted) *
+          priceInfo.data[swapPair[index].symbol]
+      );
+    }
+  }, [swapPair, index, priceInfo]);
 
   const onHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = e.target;
@@ -73,7 +87,9 @@ const NumericInput = (props: NumericInputProps) => {
           />
         </div>
         <div className="bottom">
-          <div className="bottom-left">$1.58</div>
+          <div className="bottom-left">
+            {valueInUSD ? "$" + valueInUSD : ""}
+          </div>
           <div className="bottom-right">
             {getNFloatNumber(swapPair[index]!.banlanceFormatted) !== "0" &&
               "Balance:" + getNFloatNumber(swapPair[index]!.banlanceFormatted)}

@@ -24,32 +24,31 @@ import { useDebounceFn } from "ahooks";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import { searchPath } from "@/components/onchainUtils";
-import { getNFloatNumber } from "@/components/utils";
+import { PriceInfo, getNFloatNumber } from "@/components/utils";
 
 import styles from "@/styles/Home.module.less";
-
-type PriceInfo = {
-  is_success: boolean;
-  data: Record<string, number>;
-  is_idempotent: boolean;
-  error_code?: string;
-  error_msg?: string;
-  total: number;
-};
 
 const WETH_ADDR = currencyMap.WETH.address;
 const WETH_SYMBOL = "WETH";
 
 export const getStaticProps = async () => {
+  const params = Object.keys(currencyMap).reduce(
+    (pre: URLSearchParams, cur: string) => {
+      pre.append("t", cur);
+      return pre;
+    },
+    new URLSearchParams()
+  );
+
   const res = await fetch(
-    "https://api.izumi.finance/api/v1/token_info/price_info/?t=USDC&t=ETH&t=WETH&t=USDT&t=iZi&t=BUSD&t=WBNB&t=iUSD&t=WBNB&t=BNB"
+    `https://api.izumi.finance/api/v1/token_info/price_info/?${params.toString()}`
   );
   const repo = await res.json();
   return { props: { priceInfo: repo } };
 };
 
 export default function Home(props: { priceInfo: PriceInfo }) {
-  console.log({ props });
+  const { priceInfo } = props;
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
@@ -349,6 +348,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
               currencyMap={fetchedCurrencyMap}
               tip="Pay"
               index={0}
+              priceInfo={priceInfo}
               swapPair={swapPair}
               onSelect={(e) => onCurrencySelect(e, 0)}
               onChange={onInputAmountChange}
@@ -362,6 +362,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
               currencyMap={fetchedCurrencyMap}
               tip="Receive"
               index={1}
+              priceInfo={priceInfo}
               swapPair={swapPair}
               onSelect={(e) => onCurrencySelect(e, 1)}
               onChange={(v) =>

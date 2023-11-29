@@ -40,7 +40,7 @@ const currencyMap: Record<string, Currency> = {
     logoSrc: USDT.src,
     address: ERC20Addrs.USDT_ADDR,
   },
-  IZI: {
+  iZi: {
     name: "iZUMi Token",
     logoSrc: IZI.src,
     address: ERC20Addrs.IZI_ADDR,
