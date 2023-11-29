@@ -11,10 +11,10 @@ import {
 import { parseUnits, formatUnits } from "viem";
 import { fetchBalance } from "@wagmi/core";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import favicon from "@/assets/favicon.ico";
 import logo from "@/assets/logo.svg";
-import { Button } from "antd";
+import { Button, ButtonProps } from "antd";
 import { SwapOutlined, WarningOutlined } from "@ant-design/icons";
 import NumericInput from "@/components/NumericInput";
 import currencyMap from "@/components/currencyMap";
@@ -298,7 +298,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
 
   console.log({ isLoading, isSuccess, error, isLoading2, isSuccess2, error2 });
 
-  const writeSwap = () => {
+  const writeSwap = useCallback(() => {
     write?.({
       args: [
         {
@@ -314,9 +314,9 @@ export default function Home(props: { priceInfo: PriceInfo }) {
       ],
       value: swapPair[0].address ? 0n : swapPair[0].value,
     });
-  };
+  }, [accountAddress, searchPathInfo, swapPair, write]);
 
-  const onClickSwap = () => {
+  const onClickSwap = useCallback(() => {
     // 检查授权
     if (
       (!allowanceData || allowanceData < swapPair[0].value) &&
@@ -328,7 +328,54 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     } else {
       writeSwap();
     }
-  };
+  }, [allowanceData, swapPair, approveWrites, writeSwap]);
+
+  const mainButton = useMemo(() => {
+    const btnProps: ButtonProps = {
+      className: "swap-primary-btn",
+      type: "primary",
+      size: "large",
+    };
+    if (!isConnected) {
+      return (
+        <Button
+          {...btnProps}
+          onClick={() => openWeb3Modal({ view: "Connect" })}
+        >
+          Connect Wallet
+        </Button>
+      );
+    }
+    if (!isCorrectChain) {
+      return (
+        <Button
+          {...btnProps}
+          onClick={() => openWeb3Modal({ view: "Networks" })}
+        >
+          Connect to {chains[0].name}
+        </Button>
+      );
+    }
+    if (swapPair.some((sp) => !sp.symbol)) {
+      return (
+        <Button {...btnProps} disabled>
+          Select a token
+        </Button>
+      );
+    }
+    return (
+      <Button {...btnProps} onClick={onClickSwap}>
+        Swap
+      </Button>
+    );
+  }, [
+    isConnected,
+    isCorrectChain,
+    chains,
+    swapPair,
+    openWeb3Modal,
+    onClickSwap,
+  ]);
 
   return (
     <>
@@ -390,6 +437,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
               index={0}
               priceInfo={priceInfo}
               swapPair={swapPair}
+              disabled={!isPrepared}
               onSelect={(e) => onCurrencySelect(e, 0)}
               onChange={onInputAmountChange}
             />
@@ -404,6 +452,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
               index={1}
               priceInfo={priceInfo}
               swapPair={swapPair}
+              disabled={!isPrepared}
               onSelect={(e) => onCurrencySelect(e, 1)}
               // onChange={(v) =>
               //   setSwapPair((sp) => [
@@ -416,15 +465,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
               //   ])
               // }
             />
-            <Button
-              className="swap-primary-btn"
-              type="primary"
-              size="large"
-              disabled={swapPair.some((sp) => !sp.symbol || !sp.formatted)}
-              onClick={onClickSwap}
-            >
-              {swapPair.some((sp) => !sp.symbol) ? "Select a token" : "Swap"}
-            </Button>
+            {mainButton}
           </div>
         </div>
       </main>

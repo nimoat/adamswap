@@ -13,6 +13,7 @@ interface NumericInputProps {
   index: 0 | 1;
   priceInfo: PriceInfo;
   swapPair: [CurrencyV, CurrencyV];
+  disabled?: boolean;
   onChange?: (value: string) => void;
   onSelect?: (c: Currency) => unknown | void;
 }
@@ -25,6 +26,7 @@ const NumericInput = (props: NumericInputProps) => {
     swapPair = [],
     index = 0,
     priceInfo,
+    disabled = false,
     onChange = () => {},
     onSelect: onPropsSelect = () => {},
   } = props;
@@ -85,6 +87,7 @@ const NumericInput = (props: NumericInputProps) => {
             placeholder="0"
             maxLength={16}
             value={swapPair[index]!.formatted}
+            disabled={disabled}
             onChange={onHandleChange}
             onBlur={onHandleBlur}
           />
