@@ -70,6 +70,13 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     [connectChain, chains]
   );
 
+  const isWrapOrUnwrap = useMemo(
+    () =>
+      swapPair.every((sp) => !!sp.symbol) &&
+      swapPair.map((sp) => sp.address).join("") === WETH_ADDR,
+    [swapPair]
+  );
+
   const fetchAllBalance = () => {
     Promise.all(
       Object.entries(currencyMap).map(([key, map]) =>
@@ -139,66 +146,99 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         return [...sp];
       });
     }
+
+    if (
+      currency.symbol &&
+      swapPair[1 - index].symbol &&
+      swapPair[0].formatted &&
+      swapPair[0].value
+    ) {
+      debounceInputAmountChange(swapPair[0].formatted);
+    }
   };
 
   const onClickOrder = () => {
+    if (swapPair.some((item) => !item.symbol)) {
+      return;
+    }
+
     setSwapPair((sp) => {
-      return [sp[1], sp[0]];
+      return [
+        { ...sp[1], value: 0n, formatted: "" },
+        { ...sp[0], value: 0n, formatted: "" },
+      ];
     });
   };
 
   const onInputAmountChange = (v: string) => {
+    const value = parseUnits(v, swapPair[0].decimals!);
     setSwapPair((sp) => [
       {
         ...sp[0],
-        value: parseUnits(v, sp[0].decimals!),
+        value,
         formatted: v,
       },
       sp[1],
     ]);
+
     if (
       v &&
-      v! == swapPair[0].formatted &&
+      v !== swapPair[0].formatted &&
+      value &&
       swapPair.every((sp) => !!sp.symbol)
     ) {
+      // value 保证输入格式正确
       debounceInputAmountChange(v);
     }
   };
 
   const { run: debounceInputAmountChange } = useDebounceFn(
     (value: string) => {
-      searchPath(
-        {
-          address: swapPair[0].address ?? WETH_ADDR!,
-          symbol: swapPair[0].address ? swapPair[0].symbol! : WETH_SYMBOL,
-          chainId: connectChain!.id,
-          decimal: 18,
-        },
-        {
-          address: swapPair[1].address ?? WETH_ADDR!,
-          symbol: swapPair[1].address ? swapPair[1].symbol! : WETH_SYMBOL,
-          chainId: connectChain!.id,
-          decimal: 18,
-        },
-        parseUnits(value, swapPair[0].decimals!).toString(),
-        connectChain!
-      ).then((res) => {
-        setSearchPathInfo(res);
-        if (res.amount) {
-          const outputValue = formatUnits(
-            BigInt(res.amount),
-            swapPair[1].decimals!
-          );
-          setSwapPair((sp) => [
-            sp[0],
-            {
-              ...sp[1],
-              value: BigInt(res.amount),
-              formatted: getNFloatNumber(outputValue, 5),
-            },
-          ]);
-        }
-      });
+      const bnValue = parseUnits(value, swapPair[0].decimals!);
+      if (isWrapOrUnwrap) {
+        // ETH/WETH
+        setSwapPair((sp) => [
+          sp[0],
+          {
+            ...sp[1],
+            value: bnValue,
+            formatted: formatUnits(bnValue, sp[1].decimals!),
+          },
+        ]);
+      } else {
+        searchPath(
+          {
+            address: swapPair[0].address ?? WETH_ADDR!,
+            symbol: swapPair[0].address ? swapPair[0].symbol! : WETH_SYMBOL,
+            chainId: connectChain!.id,
+            decimal: 18,
+          },
+          {
+            address: swapPair[1].address ?? WETH_ADDR!,
+            symbol: swapPair[1].address ? swapPair[1].symbol! : WETH_SYMBOL,
+            chainId: connectChain!.id,
+            decimal: 18,
+          },
+          bnValue.toString(),
+          connectChain!
+        ).then((res) => {
+          setSearchPathInfo(res);
+          if (res.amount) {
+            const outputValue = formatUnits(
+              BigInt(res.amount),
+              swapPair[1].decimals!
+            );
+            setSwapPair((sp) => [
+              sp[0],
+              {
+                ...sp[1],
+                value: BigInt(res.amount),
+                formatted: getNFloatNumber(outputValue, 5),
+              },
+            ]);
+          }
+        });
+      }
     },
     {
       wait: 500,
@@ -365,16 +405,16 @@ export default function Home(props: { priceInfo: PriceInfo }) {
               priceInfo={priceInfo}
               swapPair={swapPair}
               onSelect={(e) => onCurrencySelect(e, 1)}
-              onChange={(v) =>
-                setSwapPair((sp) => [
-                  sp[0],
-                  {
-                    ...sp[1],
-                    value: parseUnits(v, sp[1].decimals!),
-                    formatted: v,
-                  },
-                ])
-              }
+              // onChange={(v) =>
+              //   setSwapPair((sp) => [
+              //     sp[0],
+              //     {
+              //       ...sp[1],
+              //       value: parseUnits(v, sp[1].decimals!),
+              //       formatted: v,
+              //     },
+              //   ])
+              // }
             />
             <Button
               className="swap-primary-btn"

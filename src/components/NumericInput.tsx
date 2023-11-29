@@ -13,14 +13,21 @@ interface NumericInputProps {
   index: 0 | 1;
   priceInfo: PriceInfo;
   swapPair: [CurrencyV, CurrencyV];
-  onChange: (value: string) => void;
-  onSelect: (c: Currency) => unknown | void;
+  onChange?: (value: string) => void;
+  onSelect?: (c: Currency) => unknown | void;
 }
 
 // const formatNumber = (value: number) => new Intl.NumberFormat().format(value);
 
 const NumericInput = (props: NumericInputProps) => {
-  const { tip = "", swapPair = [], index = 0, priceInfo, onChange } = props;
+  const {
+    tip = "",
+    swapPair = [],
+    index = 0,
+    priceInfo,
+    onChange = () => {},
+    onSelect: onPropsSelect = () => {},
+  } = props;
 
   const [selectModalShow, setSelectModalShow] = useState(false);
 
@@ -56,7 +63,7 @@ const NumericInput = (props: NumericInputProps) => {
 
   const onSelect = (currency: Currency) => {
     setSelectModalShow(false);
-    props.onSelect(currency);
+    onPropsSelect(currency);
   };
 
   // const title = value ? (
