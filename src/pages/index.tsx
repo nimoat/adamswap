@@ -363,6 +363,20 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         </Button>
       );
     }
+    if (swapPair.some((sp) => !sp.formatted || !sp.value)) {
+      return (
+        <Button {...btnProps} disabled>
+          Enter an amount
+        </Button>
+      );
+    }
+    if (isPrepared && swapPair[0].value > swapPair[0].banlanceValue!) {
+      return (
+        <Button {...btnProps} disabled>
+          Insufficient {swapPair[0].symbol} balance
+        </Button>
+      );
+    }
     return (
       <Button {...btnProps} onClick={onClickSwap}>
         Swap
@@ -371,6 +385,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
   }, [
     isConnected,
     isCorrectChain,
+    isPrepared,
     chains,
     swapPair,
     openWeb3Modal,
