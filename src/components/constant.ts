@@ -7,7 +7,8 @@ export const ERC20Addrs = {
   IZI_ADDR: "0xeb122de19fea9ed039e2d087113db26017f5f91a",
 };
 
-export const swapContractAddress = "0x77132b63429718Db2B6ad8D942eE13A198f6Ab49";
+// export const swapContractAddress = "0x77132b63429718Db2B6ad8D942eE13A198f6Ab49"; // izumi
+export const swapContractAddress = "0xdD2F3e26B34f61fcFACBBcB227DB293F6aaA75a5"; // self
 
 export const swapAbi = [
   {

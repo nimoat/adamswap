@@ -36,6 +36,9 @@ type PriceInfo = {
   total: number;
 };
 
+const WETH_ADDR = currencyMap.WETH.address;
+const WETH_SYMBOL = "WETH";
+
 export const getStaticProps = async () => {
   const res = await fetch(
     "https://api.izumi.finance/api/v1/token_info/price_info/?t=USDC&t=ETH&t=WETH&t=USDT&t=iZi&t=BUSD&t=WBNB&t=iUSD&t=WBNB&t=BNB"
@@ -61,33 +64,44 @@ export default function Home(props: { priceInfo: PriceInfo }) {
   const { address: accountAddress, isConnected } = useAccount();
   const { chain: connectChain, chains } = useNetwork();
 
+  const fetchAllBalance = () => {
+    Promise.all(
+      Object.entries(currencyMap).map(([key, map]) =>
+        fetchBalance({
+          address: accountAddress as `0x${string}`,
+          token: map.address as `0x${string}`,
+        }).then(({ decimals, symbol, formatted, value }) => [
+          key,
+          {
+            ...map,
+            decimals,
+            symbol,
+            banlanceFormatted: formatted,
+            banlanceValue: value,
+          },
+        ])
+      )
+    ).then((res) => {
+      const _fetchedCurrencyMap = Object.fromEntries(res);
+      setFetchedCurrencyMap(_fetchedCurrencyMap);
+      setSwapPair([
+        { ..._fetchedCurrencyMap.ETH, value: 0n, formatted: "" },
+        { value: 0n, formatted: "" },
+      ]);
+    });
+  };
+
   useEffect(() => {
     if (isConnected && chains.some((item) => item.id === connectChain!.id)) {
-      Promise.all(
-        Object.entries(currencyMap).map(([key, map]) =>
-          fetchBalance({
-            address: accountAddress as `0x${string}`,
-            token: map.address as `0x${string}`,
-          }).then(({ decimals, symbol, formatted, value }) => [
-            key,
-            {
-              ...map,
-              decimals,
-              symbol,
-              banlanceFormatted: formatted,
-              banlanceValue: value,
-            },
-          ])
-        )
-      ).then((res) => {
-        const _fetchedCurrencyMap = Object.fromEntries(res);
-        setFetchedCurrencyMap(_fetchedCurrencyMap);
-        setSwapPair([
-          { ..._fetchedCurrencyMap.ETH, value: 0n, formatted: "" },
-          { value: 0n, formatted: "" },
-        ]);
-      });
+      fetchAllBalance();
+    } else {
+      setFetchedCurrencyMap(undefined);
+      setSwapPair([
+        { ...currencyMap.ETH, value: 0n, formatted: "" },
+        { value: 0n, formatted: "" },
+      ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountAddress, isConnected, connectChain, chains]);
 
   const isPrepared = useMemo(() => !!fetchedCurrencyMap, [fetchedCurrencyMap]);
@@ -134,7 +148,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     if (
       v &&
       v! == swapPair[0].formatted &&
-      swapPair.every((sp) => !!sp.address)
+      swapPair.every((sp) => !!sp.symbol)
     ) {
       debounceInputAmountChange(v);
     }
@@ -144,14 +158,14 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     (value: string) => {
       searchPath(
         {
-          address: swapPair[0].address!,
-          symbol: swapPair[0].symbol!,
+          address: swapPair[0].address ?? WETH_ADDR!,
+          symbol: swapPair[0].address ? swapPair[0].symbol! : WETH_SYMBOL,
           chainId: connectChain!.id,
           decimal: 18,
         },
         {
-          address: swapPair[1].address!,
-          symbol: swapPair[1].symbol!,
+          address: swapPair[1].address ?? WETH_ADDR!,
+          symbol: swapPair[1].address ? swapPair[1].symbol! : WETH_SYMBOL,
           chainId: connectChain!.id,
           decimal: 18,
         },
@@ -247,13 +261,16 @@ export default function Home(props: { priceInfo: PriceInfo }) {
           deadline: Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
         },
       ],
-      // value: 0,
+      value: swapPair[0].address ? 0n : swapPair[0].value,
     });
   };
 
   const onClickSwap = () => {
     // 检查授权
-    if (!allowanceData || allowanceData < swapPair[0].value) {
+    if (
+      (!allowanceData || allowanceData < swapPair[0].value) &&
+      swapPair[0].address
+    ) {
       approveWrites?.({
         args: [swapContractAddress, swapPair[0].value],
       });

@@ -83,7 +83,7 @@ const NumericInput = (props: NumericInputProps) => {
       {props.currencyMap && (
         <CurrencySelectModal
           currencyMap={props.currencyMap}
-          open={selectModalShow}
+          open={props.currencyMap && selectModalShow}
           onSelect={onSelect}
           onCancel={() => setSelectModalShow(false)}
         />
