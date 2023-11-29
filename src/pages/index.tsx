@@ -10,11 +10,12 @@ import {
 } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
 import { fetchBalance } from "@wagmi/core";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import React, { useEffect, useMemo, useState } from "react";
 import favicon from "@/assets/favicon.ico";
 import logo from "@/assets/logo.svg";
 import { Button } from "antd";
-import { SwapOutlined } from "@ant-design/icons";
+import { SwapOutlined, WarningOutlined } from "@ant-design/icons";
 import NumericInput from "@/components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
@@ -63,6 +64,12 @@ export default function Home(props: { priceInfo: PriceInfo }) {
 
   const { address: accountAddress, isConnected } = useAccount();
   const { chain: connectChain, chains } = useNetwork();
+  const { open: openWeb3Modal, close: closeWeb3Modal } = useWeb3Modal();
+
+  const isCorrectChain = useMemo(
+    () => connectChain && chains.some((item) => item.id === connectChain.id),
+    [connectChain, chains]
+  );
 
   const fetchAllBalance = () => {
     Promise.all(
@@ -92,7 +99,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
   };
 
   useEffect(() => {
-    if (isConnected && chains.some((item) => item.id === connectChain!.id)) {
+    if (isConnected && isCorrectChain) {
       fetchAllBalance();
     } else {
       setFetchedCurrencyMap(undefined);
@@ -106,7 +113,12 @@ export default function Home(props: { priceInfo: PriceInfo }) {
 
   const isPrepared = useMemo(() => !!fetchedCurrencyMap, [fetchedCurrencyMap]);
 
-  // console.log({ isPrepared, fetchedCurrencyMap });
+  useEffect(() => {
+    if (isCorrectChain) {
+      closeWeb3Modal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCorrectChain]);
 
   const closeAll = () => {
     setIsNetworkSwitchHighlighted(false);
@@ -305,7 +317,18 @@ export default function Home(props: { priceInfo: PriceInfo }) {
                 isNetworkSwitchHighlighted ? styles.highlightSelected : ``
               }`}
             >
-              <w3m-network-button />
+              {isCorrectChain || !isConnected ? (
+                <w3m-network-button />
+              ) : (
+                <Button
+                  type="text"
+                  danger
+                  icon={<WarningOutlined />}
+                  onClick={() => openWeb3Modal({ view: "Networks" })}
+                >
+                  Wrong Network
+                </Button>
+              )}
             </div>
             <div
               onClick={closeAll}

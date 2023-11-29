@@ -22,7 +22,12 @@ const metadata = {
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
-createWeb3Modal({ wagmiConfig, projectId, chains });
+createWeb3Modal({
+  wagmiConfig,
+  projectId,
+  chains,
+  defaultChain: chains[0],
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   const [ready, setReady] = useState(false);
