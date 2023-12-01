@@ -55,5 +55,10 @@ details.
 
 ## TODO
 1. wrap/unwarp
-2. 滑点配置
-3. Y2X能力
+~~2. 计算min received~~
+~~3. 预估gas fee~~
+4. 滑点配置
+5. Y2X能力
+6. 禁用状态样式
+7. 样式优化：弹性布局/移动端适配
+8. docs页面

@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { Input } from "antd";
 import styles from "../styles/NumericInput.module.less";
 import CurrencySelect from "./CurrencySelect";
 import CurrencySelectModal from "./CurrencySelectModal";
-import type { Currency, CurrencyV } from "./currencyMap";
+import type { Currency } from "./currencyMap";
 import { PriceInfo, getNFloatNumber } from "./utils";
+import { SwapPair } from "./context";
 
 interface NumericInputProps {
   currencyMap: Record<string, Currency> | undefined;
@@ -12,7 +13,6 @@ interface NumericInputProps {
   tip?: string;
   index: 0 | 1;
   priceInfo: PriceInfo;
-  swapPair: [CurrencyV, CurrencyV];
   disabled?: boolean;
   onChange?: (value: string) => void;
   onSelect?: (c: Currency) => unknown | void;
@@ -23,13 +23,14 @@ interface NumericInputProps {
 const NumericInput = (props: NumericInputProps) => {
   const {
     tip = "",
-    swapPair = [],
     index = 0,
     priceInfo,
     disabled = false,
     onChange = () => {},
     onSelect: onPropsSelect = () => {},
   } = props;
+
+  const swapPair = useContext(SwapPair);
 
   const [selectModalShow, setSelectModalShow] = useState(false);
 
