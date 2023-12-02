@@ -450,7 +450,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
                 isConnectHighlighted ? styles.highlightSelected : ``
               }`}
             >
-              <w3m-button />
+              <w3m-button balance="hide" />
             </div>
           </div>
         </div>

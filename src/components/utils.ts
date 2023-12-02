@@ -27,7 +27,7 @@ export type PriceInfo = {
  * 1%
  */
 export const getMinReceived = (originOutputValue: bigint, decimals: number) => {
-  const value = (originOutputValue * 99n) / 100n;
+  const value = (originOutputValue * 990n) / 1001n;
   return {
     value,
     formated: getNFloatNumber(formatUnits(value, decimals), 5),
