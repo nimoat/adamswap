@@ -1,4 +1,4 @@
-import { formatUnits } from "viem";
+import { formatEther, formatUnits } from "viem";
 
 // 省略显示数字
 export const getNFloatNumber = (number: string | number = 0, n = 3) => {
@@ -33,3 +33,13 @@ export const getMinReceived = (originOutputValue: bigint, decimals: number) => {
     formated: getNFloatNumber(formatUnits(value, decimals), 5),
   };
 };
+
+export const getNetworkFee = (
+  gasPrice: bigint,
+  gasLimit: bigint,
+  priceInfo: PriceInfo
+) =>
+  "$" +
+  getNFloatNumber(
+    Number(formatEther(gasPrice * gasLimit)) * priceInfo.data.ETH
+  );

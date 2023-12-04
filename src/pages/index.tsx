@@ -27,6 +27,7 @@ import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import { searchPath } from "@/components/onchainUtils";
 import { PriceInfo, getNFloatNumber } from "@/components/utils";
 import { SwapPair } from "@/components/context";
+import ConfirmModal from "@/components/ConfirmModal";
 
 import styles from "@/styles/Home.module.less";
 
@@ -63,6 +64,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
   ]);
   const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
   const [feeData, setFeeData] = useState<FetchFeeDataResult | undefined>();
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const { address: accountAddress, isConnected } = useAccount();
   const { chain: connectChain, chains } = useNetwork();
@@ -329,7 +331,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     });
   }, [accountAddress, searchPathInfo, swapPair, write]);
 
-  const onClickSwap = useCallback(() => {
+  const onConfirmSwap = useCallback(() => {
     // 检查授权
     if (
       (!allowanceData || allowanceData < swapPair[0].value) &&
@@ -345,7 +347,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
 
   const mainButton = useMemo(() => {
     const btnProps: ButtonProps = {
-      className: "swap-primary-btn",
+      className: styles["swap-primary-btn"],
       type: "primary",
       size: "large",
     };
@@ -391,7 +393,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
       );
     }
     return (
-      <Button {...btnProps} onClick={onClickSwap}>
+      <Button {...btnProps} onClick={() => setIsConfirmModalOpen(true)}>
         Swap
       </Button>
     );
@@ -402,7 +404,6 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     chains,
     swapPair,
     openWeb3Modal,
-    onClickSwap,
   ]);
 
   return (
@@ -504,6 +505,14 @@ export default function Home(props: { priceInfo: PriceInfo }) {
           </div>
         </div>
       </main>
+      <ConfirmModal
+        isModalOpen={isConfirmModalOpen}
+        priceInfo={priceInfo}
+        searchPathInfo={searchPathInfo!}
+        feeData={feeData}
+        onCancel={() => setIsConfirmModalOpen(false)}
+        onOk={onConfirmSwap}
+      />
     </SwapPair.Provider>
   );
 }

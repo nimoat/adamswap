@@ -1,0 +1,46 @@
+@gray-font-color: rgb(155, 155, 155);
+@input-bgcolor: rgb(27, 27, 27);
+
+
+.review-modal, .steps-modal {
+  :global{
+    .ant-modal{
+      width: clamp(320px, 90%, 420px);
+      max-width: clamp(320px, 90%, 420px);
+
+      .swap-pair {
+        font-size: 32px;
+        padding-top: @sizeMS + 0px;
+
+        .pair-item {
+          &:first-child {
+            margin-bottom: 20px;
+          }
+          .tip {
+            font-size: 12px;
+            color: @gray-font-color;
+          }
+      
+          .center {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .symbol {
+              display: flex;
+              align-items: center;
+              img {
+                border-radius: 50%;
+              }
+            } 
+          }
+      
+          .bottom {
+            display: flex;
+            font-size: 12px;
+            color: @gray-font-color;
+          }
+        }
+      }
+    }
+  }
+}

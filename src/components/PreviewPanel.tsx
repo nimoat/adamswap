@@ -1,13 +1,20 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext } from "react";
 import { Collapse, Descriptions } from "antd";
 import { SwapPair } from "./context";
-import { PriceInfo, getMinReceived, getNFloatNumber } from "./utils";
+import {
+  PriceInfo,
+  getMinReceived,
+  getNFloatNumber,
+  getNetworkFee,
+} from "./utils";
+import Rate from "./Rate";
 import Image from "next/image";
 import gas from "@/assets/gas.svg";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import type { FetchFeeDataResult } from "@wagmi/core";
 import { gasLimit } from "./constant";
-import { formatEther } from "viem";
+
+import homeStyles from "@/styles/Home.module.less";
 
 type PreviewPanelProps = {
   searchPathInfo: PathQueryResult;
@@ -20,35 +27,15 @@ const PreviewPanel = (props: PreviewPanelProps) => {
 
   const swapPair = useContext(SwapPair);
 
-  const networkFee = useMemo(
-    () =>
-      feeData?.gasPrice
-        ? "$" +
-          getNFloatNumber(
-            Number(formatEther(feeData.gasPrice * gasLimit)) *
-              priceInfo.data.ETH
-          )
-        : "",
-    [feeData, priceInfo]
-  );
+  const networkFee = feeData?.gasPrice
+    ? getNetworkFee(feeData.gasPrice, gasLimit, priceInfo)
+    : "";
 
   return (
     <Collapse
       items={[
         {
-          label: (
-            <span
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              1 {swapPair[0].symbol} ={" "}
-              {getNFloatNumber(
-                Number(swapPair[1].formatted) / Number(swapPair[0].formatted)
-              )}{" "}
-              {swapPair[1].symbol}
-            </span>
-          ),
+          label: <Rate />,
           extra: (
             <span>
               <Image
@@ -63,6 +50,7 @@ const PreviewPanel = (props: PreviewPanelProps) => {
           ),
           children: (
             <Descriptions
+              className={homeStyles["swap-descriptions"]}
               column={1}
               colon={false}
               items={[
@@ -87,7 +75,7 @@ const PreviewPanel = (props: PreviewPanelProps) => {
                   key: 4,
                   label: "Network fee",
                   children: networkFee,
-                }, // @TODO:预估gas
+                },
                 // {
                 //   key: 5,
                 //   label: "Route",
