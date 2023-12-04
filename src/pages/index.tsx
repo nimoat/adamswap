@@ -1,17 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
-import {
-  erc20ABI,
-  useContractWrite,
-  useWaitForTransaction,
-  useContractRead,
-  useAccount,
-  useNetwork,
-} from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
 import { fetchBalance, fetchFeeData, FetchFeeDataResult } from "@wagmi/core";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import favicon from "@/assets/favicon.ico";
 import logo from "@/assets/logo.svg";
 import { Button, ButtonProps } from "antd";
@@ -19,10 +12,8 @@ import { SwapOutlined, WarningOutlined } from "@ant-design/icons";
 import NumericInput from "@/components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
-import { swapContractAddress, swapAbi, gasLimit } from "@/components/constant";
 import PreviewPanel from "@/components/PreviewPanel";
 import { useDebounceFn } from "ahooks";
-import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import { searchPath } from "@/components/onchainUtils";
 import { PriceInfo, getNFloatNumber } from "@/components/utils";
@@ -258,93 +249,6 @@ export default function Home(props: { priceInfo: PriceInfo }) {
     }
   );
 
-  // 获取erc20 allowance
-  const { data: allowanceData, refetch } = useContractRead({
-    abi: isPrepared ? erc20ABI : undefined,
-    functionName: "allowance",
-    address: swapPair[0].address as `0x${string}`,
-    args: [accountAddress!, swapContractAddress],
-  });
-
-  // approve上链前
-  const { data: approveData, write: approveWrites } = useContractWrite({
-    abi: erc20ABI,
-    functionName: "approve",
-    address: swapPair[0].address as `0x${string}`,
-    // onError: (error) => {
-    //   console.log("Error", error);
-    // },
-  });
-
-  // approve上链后
-  useWaitForTransaction({
-    hash: approveData?.hash,
-    onSuccess: async () => {
-      const { data: allowance } = await refetch();
-      if (allowance && allowance >= swapPair[0].value) {
-        writeSwap();
-      }
-    },
-  });
-
-  // swap上链前
-  const { isLoading, isSuccess, data, error, write } = useContractWrite({
-    abi: swapAbi,
-    functionName: "swapAmount",
-    address: swapContractAddress,
-    gas: gasLimit,
-    gasPrice: feeData?.gasPrice ?? undefined, // Legacy Transactions.
-    // onError: (error) => {
-    //   console.log("Error", error);
-    // },
-    // onSuccess: (data) => {
-    //   console.log("data", data.hash);
-    // },
-  });
-
-  // swap上链后
-  const {
-    isLoading: isLoading2,
-    isSuccess: isSuccess2,
-    error: error2,
-  } = useWaitForTransaction({
-    hash: data?.hash,
-  });
-
-  console.log({ isLoading, isSuccess, error, isLoading2, isSuccess2, error2 });
-
-  const writeSwap = useCallback(() => {
-    write?.({
-      args: [
-        {
-          path: getTokenChainPath(
-            searchPathInfo!.path.tokenChain,
-            searchPathInfo!.path.feeContractNumber
-          ), //pathWithFee
-          recipient: accountAddress,
-          amount: swapPair[0]?.value,
-          minAcquired: (BigInt(searchPathInfo!.amount) * 95n) / 100n,
-          deadline: Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
-        },
-      ],
-      value: swapPair[0].address ? 0n : swapPair[0].value,
-    });
-  }, [accountAddress, searchPathInfo, swapPair, write]);
-
-  const onConfirmSwap = useCallback(() => {
-    // 检查授权
-    if (
-      (!allowanceData || allowanceData < swapPair[0].value) &&
-      swapPair[0].address
-    ) {
-      approveWrites?.({
-        args: [swapContractAddress, swapPair[0].value],
-      });
-    } else {
-      writeSwap();
-    }
-  }, [allowanceData, swapPair, approveWrites, writeSwap]);
-
   const mainButton = useMemo(() => {
     const btnProps: ButtonProps = {
       className: styles["swap-primary-btn"],
@@ -510,8 +414,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         priceInfo={priceInfo}
         searchPathInfo={searchPathInfo!}
         feeData={feeData}
-        onCancel={() => setIsConfirmModalOpen(false)}
-        onOk={onConfirmSwap}
+        onPreviewClose={() => setIsConfirmModalOpen(false)}
       />
     </SwapPair.Provider>
   );
