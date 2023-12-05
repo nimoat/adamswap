@@ -1,8 +1,8 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/logo.svg";
-import { Button, Modal, Descriptions, Divider } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { Button, Modal, Descriptions, Divider, notification } from "antd";
+import { LoadingOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import type { FetchFeeDataResult } from "@wagmi/core";
 import {
   erc20ABI,
@@ -32,20 +32,25 @@ type ConfirmModalPropsType = {
   priceInfo: PriceInfo;
   searchPathInfo: PathQueryResult;
   feeData: FetchFeeDataResult | undefined;
-  onPreviewClose: () => void;
+  setConfirmModalOpen: (v: boolean) => void;
 };
 
 function ConfirmModal(props: ConfirmModalPropsType) {
-  const { isModalOpen, priceInfo, searchPathInfo, feeData, onPreviewClose } =
-    props;
+  const {
+    isModalOpen,
+    priceInfo,
+    searchPathInfo,
+    feeData,
+    setConfirmModalOpen,
+  } = props;
   const swapPair = useContext(SwapPair);
 
-  // const [isSteping, setIsSteping] = useState(false);
   const [needApprove, setNeedApprove] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isSwapping, setIsSwapping] = useState(false);
 
   const { address: accountAddress } = useAccount();
+  const [notify, contextHolder] = notification.useNotification();
 
   const swapPairPlus = useMemo(() => {
     return swapPair.map((item, index) => ({
@@ -76,9 +81,16 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     abi: erc20ABI,
     functionName: "approve",
     address: swapPair[0].address as `0x${string}`,
-    // onError: (error) => {
-    //   console.log("Error", error);
-    // },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: Error | any) => {
+      notify.error({
+        message: "Error",
+        description: error.shortMessage,
+        placement: "bottomRight",
+      });
+      setIsApproving(false);
+      setConfirmModalOpen(true);
+    },
   });
 
   // approve上链后
@@ -87,44 +99,82 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     onSuccess: async () => {
       const { data: allowance } = await refetch();
       setIsApproving(false);
-      onPreviewClose();
+      notify.success({
+        message: `Approved ${swapPair[0].symbol}`,
+        placement: "bottomRight",
+      });
       if (allowance && allowance >= swapPair[0].value) {
         writeSwap();
       } else {
-        //@TODO 参考UNI
+        setConfirmModalOpen(true);
       }
+    },
+    onError: (error) => {
+      notify.error({
+        message: `Approve failed!`,
+        description: error.message,
+        placement: "bottomRight",
+      });
+      setIsApproving(false);
+      setConfirmModalOpen(true);
     },
   });
 
   // swap上链前
-  const { isLoading, isSuccess, data, error, write } = useContractWrite({
+  const { data, write } = useContractWrite({
     abi: swapAbi,
     functionName: "swapAmount",
     address: swapContractAddress,
     gas: gasLimit,
-    gasPrice: feeData?.gasPrice ?? undefined, // Legacy Transactions.
-    // onError: (error) => {
-    //   console.log("Error", error);
-    // },
-    // onSuccess: (data) => {
-    //   console.log("data", data.hash);
-    // },
+    gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: Error | any) => {
+      notify.error({
+        message: "Error",
+        description: error.shortMessage,
+        placement: "bottomRight",
+      });
+      setIsSwapping(false);
+      setConfirmModalOpen(true);
+    },
   });
 
   // swap上链后
-  const {
-    isLoading: isLoading2,
-    isSuccess: isSuccess2,
-    error: error2,
-  } = useWaitForTransaction({
+  useWaitForTransaction({
     hash: data?.hash,
+    onSuccess: async (data) => {
+      setIsSwapping(false);
+      console.log({ data });
+      notify.success({
+        message: `Swap success!`,
+        description: (
+          <Button
+            type="link"
+            target="_blank"
+            style={{ padding: 0 }}
+            href={`https://sepolia.scrollscan.com/tx/${data.transactionHash}`}
+          >
+            View on Explorer
+          </Button>
+        ),
+        placement: "bottomRight",
+      });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: Error | any) => {
+      notify.error({
+        message: `Swap failed!`,
+        description: error.shortMessage,
+        placement: "bottomRight",
+      });
+      setIsSwapping(false);
+      setConfirmModalOpen(true);
+    },
   });
-
-  console.log({ isLoading, isSuccess, error, isLoading2, isSuccess2, error2 });
 
   const writeSwap = useCallback(() => {
     setIsSwapping(true);
-    onPreviewClose();
+    setConfirmModalOpen(false);
     write?.({
       args: [
         {
@@ -140,7 +190,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
       ],
       value: swapPair[0].address ? 0n : swapPair[0].value,
     });
-  }, [accountAddress, searchPathInfo, swapPair, write]);
+  }, [accountAddress, searchPathInfo, swapPair, write, setConfirmModalOpen]);
 
   const onConfirmSwap = useCallback(() => {
     // 检查授权
@@ -153,12 +203,12 @@ function ConfirmModal(props: ConfirmModalPropsType) {
       });
       setIsApproving(true);
       setNeedApprove(true);
-      onPreviewClose();
+      setConfirmModalOpen(false);
     } else {
       setNeedApprove(false);
       writeSwap();
     }
-  }, [allowanceData, swapPair, approveWrites, writeSwap]);
+  }, [allowanceData, swapPair, approveWrites, writeSwap, setConfirmModalOpen]);
 
   const steps = useMemo(() => {
     return [
@@ -185,7 +235,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
             Confirm swap
           </Button>
         }
-        onCancel={onPreviewClose}
+        onCancel={() => setConfirmModalOpen(false)}
       >
         <div className="swap-pair">
           {swapPairPlus.map((item) => (
@@ -267,6 +317,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         onCancel={() => {
           setIsApproving(false);
           setIsSwapping(false);
+          setConfirmModalOpen(true);
         }}
       >
         {isApproving && (
@@ -277,11 +328,47 @@ function ConfirmModal(props: ConfirmModalPropsType) {
             width="36"
           />
         )}
-        {isSwapping && <LoadingOutlined />}
+        <LoadingOutlined />
         {isApproving && <p>Enable spending {swapPair[0].symbol} on EZSwap</p>}
-        {isSwapping && <p>Some contents...</p>}
+        {isSwapping && (
+          <div className="swap-confirm-info">
+            <p>Confirm swap</p>
+            <div className="pair-confirm">
+              <div className="pair-item">
+                <div className="symbol">
+                  <Image
+                    src={swapPair[0].logoSrc!}
+                    alt="Currency Logo"
+                    height="16"
+                    width="16"
+                  />
+                </div>
+                <div className="value">
+                  {swapPair[0].formatted} {swapPair[0].symbol}
+                </div>
+              </div>
+              <span>
+                <ArrowRightOutlined />
+              </span>
+              <div className="pair-item">
+                <div className="symbol">
+                  <Image
+                    src={swapPair[1].logoSrc!}
+                    alt="Currency Logo"
+                    height="16"
+                    width="16"
+                  />
+                </div>
+                <div className="value">
+                  {swapPair[1].formatted} {swapPair[1].symbol}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="tip">Proceed in your wallet</div>
       </Modal>
+      {contextHolder}
     </>
   );
 }

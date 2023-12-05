@@ -414,7 +414,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         priceInfo={priceInfo}
         searchPathInfo={searchPathInfo!}
         feeData={feeData}
-        onPreviewClose={() => setIsConfirmModalOpen(false)}
+        setConfirmModalOpen={setIsConfirmModalOpen}
       />
     </SwapPair.Provider>
   );

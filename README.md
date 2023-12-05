@@ -58,9 +58,10 @@ details.
 ~~2. 计算min received~~
 ~~3. 预估gas fee~~
 4. 滑点配置
-5. LOGO和产品名称
-6. rate刷新
-7. Y2X能力
+5. swap成功后刷新首页状态
+6. LOGO和产品名称
+7. rate刷新
 8. 禁用状态样式
 9. 样式优化：弹性布局/移动端适配
-10. docs页面
+10. Y2X能力
+11. docs页面
