@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from "react";
-import { Input } from "antd";
+import { Input, Button } from "antd";
 import styles from "../styles/NumericInput.module.less";
 import CurrencySelect from "./CurrencySelect";
 import CurrencySelectModal from "./CurrencySelectModal";
@@ -104,6 +104,17 @@ const NumericInput = (props: NumericInputProps) => {
           <div className="bottom-right">
             {getNFloatNumber(swapPair[index]!.banlanceFormatted) !== "0" &&
               "Balance:" + getNFloatNumber(swapPair[index]!.banlanceFormatted)}
+            {index === 0 && (
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  onChange(swapPair[index].banlanceFormatted!);
+                }}
+              >
+                Max
+              </Button>
+            )}
           </div>
         </div>
       </div>

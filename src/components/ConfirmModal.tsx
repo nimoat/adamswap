@@ -14,7 +14,12 @@ import {
 import Steps from "./Steps";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { SwapPair } from "./context";
-import { swapContractAddress, swapAbi, gasLimit } from "./constant";
+import {
+  swapContractAddress,
+  swapAbi,
+  gasLimit,
+  approveGasLimit,
+} from "./constant";
 import {
   PriceInfo,
   getMinReceived,
@@ -33,6 +38,7 @@ type ConfirmModalPropsType = {
   searchPathInfo: PathQueryResult;
   feeData: FetchFeeDataResult | undefined;
   setConfirmModalOpen: (v: boolean) => void;
+  onSuccess: () => void;
 };
 
 function ConfirmModal(props: ConfirmModalPropsType) {
@@ -42,6 +48,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     searchPathInfo,
     feeData,
     setConfirmModalOpen,
+    onSuccess,
   } = props;
   const swapPair = useContext(SwapPair);
 
@@ -81,6 +88,8 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     abi: erc20ABI,
     functionName: "approve",
     address: swapPair[0].address as `0x${string}`,
+    gas: approveGasLimit,
+    gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
       notify.error({
@@ -144,7 +153,6 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     hash: data?.hash,
     onSuccess: async (data) => {
       setIsSwapping(false);
-      console.log({ data });
       notify.success({
         message: `Swap success!`,
         description: (
@@ -159,6 +167,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         ),
         placement: "bottomRight",
       });
+      onSuccess();
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
@@ -246,12 +255,14 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                   {item.formatted} {item.symbol}
                 </div>
                 <div className="symbol">
-                  <Image
-                    src={item.logoSrc!}
-                    alt="Currency Logo"
-                    height="32"
-                    width="32"
-                  />
+                  {item.logoSrc && (
+                    <Image
+                      src={item.logoSrc}
+                      alt="Currency Logo"
+                      height="32"
+                      width="32"
+                    />
+                  )}
                 </div>
               </div>
               <div className="bottom">
@@ -312,6 +323,8 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         }
         wrapClassName={styles["steps-modal"]}
         centered
+        forceRender
+        maskClosable={false}
         open={isApproving || isSwapping}
         footer={needApprove ? <Steps items={steps} /> : null}
         onCancel={() => {
@@ -321,15 +334,17 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         }}
       >
         {isApproving && (
-          <Image
-            src={swapPair[0].logoSrc!}
-            alt="Currency Logo"
-            height="36"
-            width="36"
-          />
+          <>
+            <Image
+              src={swapPair[0].logoSrc!}
+              alt="Currency Logo"
+              height="36"
+              width="36"
+            />
+            <p>Enable spending {swapPair[0].symbol} on EZSwap</p>
+          </>
         )}
         <LoadingOutlined />
-        {isApproving && <p>Enable spending {swapPair[0].symbol} on EZSwap</p>}
         {isSwapping && (
           <div className="swap-confirm-info">
             <p>Confirm swap</p>

@@ -415,6 +415,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         searchPathInfo={searchPathInfo!}
         feeData={feeData}
         setConfirmModalOpen={setIsConfirmModalOpen}
+        onSuccess={() => fetchAllBalance()}
       />
     </SwapPair.Provider>
   );

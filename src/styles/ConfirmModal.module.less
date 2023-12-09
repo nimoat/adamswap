@@ -2,38 +2,48 @@
 @input-bgcolor: rgb(27, 27, 27);
 
 
-.review-modal, .steps-modal {
+.review-modal,
+.steps-modal {
   :global {
     .ant-modal {
       width: clamp(320px, 90%, 420px);
       max-width: clamp(320px, 90%, 420px);
 
       .swap-pair {
-        font-size: 32px;
+        font-size: clamp(14px, 32px, 32px);
         padding-top: @sizeMS + 0px;
 
         .pair-item {
           &:first-child {
             margin-bottom: 20px;
           }
+
           .tip {
             font-size: 12px;
             color: @gray-font-color;
           }
-      
+
           .center {
             display: flex;
             justify-content: space-between;
             align-items: center;
+
+            .value {
+              word-break: break-all;
+              overflow: hidden;
+              line-height: 1.2;
+            }
+
             .symbol {
               display: flex;
               align-items: center;
+
               img {
                 border-radius: 50%;
               }
-            } 
+            }
           }
-      
+
           .bottom {
             display: flex;
             font-size: 12px;
@@ -46,32 +56,40 @@
 }
 
 .steps-modal {
+  @body-padding-top: 10px;
+
   :global {
     .ant-modal-body {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+      height: 210px;
+      padding-top: @body-padding-top;
 
-      > img {
+      >img {
         position: absolute;
-        top: 3px;
-        margin: 30px;
+        top: calc(3px + @body-padding-top);
+        margin: 0;
         border-radius: 50%;
       }
 
       .anticon-loading {
-        margin: 30px;
+        order: 0;
+        margin: 0;
         font-size: 42px;
       }
 
       p {
+        order: 1;
         font-size: 20px;
         font-weight: 400;
       }
 
       .tip {
-        margin-top: 50px;
+        order: 2;
+        margin-top: 10px;
         font-size: 12px;
         color: @gray-font-color;
       }
@@ -80,18 +98,26 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        p {
+          order: 0;
+        }
+
         .pair-confirm {
           display: flex;
           align-items: center;
           margin-top: 12px;
           font-size: 13px;
           gap: 12px;
+
           .pair-item {
             display: flex;
             align-items: center;
+
             .symbol {
               margin-right: 5px;
               font-size: 0;
+
               img {
                 margin: 0;
                 border-radius: 50%;
@@ -101,10 +127,11 @@
         }
       }
     }
-  
+
     .ant-modal-footer {
       // margin-top: 0;
       text-align: center;
+
       .ant-steps {
         justify-content: center;
       }
