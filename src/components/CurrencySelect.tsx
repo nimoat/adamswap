@@ -8,30 +8,39 @@ import styles from "../styles/CurrencySelect.module.less";
 
 interface CurrcySelectProps {
   currency?: CurrencyV;
+  disabled?: boolean;
   onClick: () => object | void;
 }
 
 const CurrencySelect = (props: CurrcySelectProps) => {
+  const { currency, disabled, onClick } = props;
+
   return (
     <>
-      {props.currency?.symbol ? (
+      {currency?.symbol ? (
         <Button
           className={styles.CurrencySelect}
           type="text"
           size="small"
-          onClick={props.onClick}
+          onClick={onClick}
         >
           <Image
-            src={props.currency.logoSrc!}
+            src={currency.logoSrc!}
             alt="Currency Logo"
             height="24"
             width="24"
           />
-          <span className="currencyName">{props.currency?.symbol}</span>
+          <span className="currencyName">{currency?.symbol}</span>
           <DownOutlined />
         </Button>
       ) : (
-        <Button type="primary" size="middle" onClick={props.onClick}>
+        <Button
+          className={disabled ? styles.disabled : ""}
+          type="primary"
+          size="middle"
+          disabled={disabled}
+          onClick={disabled ? () => {} : onClick}
+        >
           Select token <DownOutlined />
         </Button>
       )}

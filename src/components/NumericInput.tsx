@@ -88,12 +88,13 @@ const NumericInput = (props: NumericInputProps) => {
             placeholder="0"
             maxLength={16}
             value={swapPair[index]!.formatted}
-            disabled={disabled}
+            disabled={disabled || !swapPair[index].symbol}
             onChange={onHandleChange}
             onBlur={onHandleBlur}
           />
           <CurrencySelect
             currency={swapPair[index]}
+            disabled={disabled}
             onClick={() => setSelectModalShow(true)}
           />
         </div>
@@ -102,18 +103,22 @@ const NumericInput = (props: NumericInputProps) => {
             {valueInUSD ? "$" + valueInUSD : ""}
           </div>
           <div className="bottom-right">
-            {getNFloatNumber(swapPair[index]!.banlanceFormatted) !== "0" &&
-              "Balance:" + getNFloatNumber(swapPair[index]!.banlanceFormatted)}
-            {index === 0 && (
-              <Button
-                type="link"
-                size="small"
-                onClick={() => {
-                  onChange(swapPair[index].banlanceFormatted!);
-                }}
-              >
-                Max
-              </Button>
+            {getNFloatNumber(swapPair[index]!.banlanceFormatted) !== "0" && (
+              <>
+                {"Balance:" +
+                  getNFloatNumber(swapPair[index]!.banlanceFormatted)}
+                {index === 0 && (
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => {
+                      onChange(swapPair[index].banlanceFormatted!);
+                    }}
+                  >
+                    Max
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </div>
