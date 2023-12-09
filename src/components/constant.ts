@@ -8,7 +8,8 @@ export const ERC20Addrs = {
 };
 
 // export const swapContractAddress = "0x77132b63429718Db2B6ad8D942eE13A198f6Ab49"; // izumi
-export const swapContractAddress = "0xdD2F3e26B34f61fcFACBBcB227DB293F6aaA75a5"; // self
+// export const swapContractAddress = "0xdD2F3e26B34f61fcFACBBcB227DB293F6aaA75a5"; // self1
+export const swapContractAddress = "0x921192412126e75570b6D24EBA97e8C550b5B6bB"; // self1
 
 export const approveGasLimit = 30_000n; // test
 

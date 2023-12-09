@@ -135,7 +135,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     functionName: "swapAmount",
     address: swapContractAddress,
     gas: gasLimit,
-    gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
+    // gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
       notify.error({
