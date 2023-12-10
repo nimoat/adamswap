@@ -4,6 +4,7 @@ import logo from "@/assets/logo.svg";
 import { Button, Modal, Descriptions, Divider, notification } from "antd";
 import { LoadingOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import type { FetchFeeDataResult } from "@wagmi/core";
+// import { parseGwei } from "viem";
 import {
   erc20ABI,
   useContractWrite,
@@ -14,12 +15,7 @@ import {
 import Steps from "./Steps";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { SwapPair } from "./context";
-import {
-  swapContractAddress,
-  swapAbi,
-  gasLimit,
-  approveGasLimit,
-} from "./constant";
+import { swapContractAddress, swapAbi, gasLimit } from "./constant";
 import {
   PriceInfo,
   getMinReceived,
@@ -88,8 +84,8 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     abi: erc20ABI,
     functionName: "approve",
     address: swapPair[0].address as `0x${string}`,
-    gas: approveGasLimit,
-    gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
+    // gas: approveGasLimit,
+    // gasPrice: parseGwei("0.1"), //  feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
       notify.error({
@@ -248,7 +244,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
       >
         <div className="swap-pair">
           {swapPairPlus.map((item) => (
-            <div className="pair-item" key={item.symbol}>
+            <div className="pair-item" key={item.tip}>
               <div className="tip">{item.tip}</div>
               <div className="center">
                 <div className="value">

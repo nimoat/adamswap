@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Input, Divider } from "antd";
 import Image from "next/image";
 import { SearchOutlined } from "@ant-design/icons";
@@ -20,6 +20,10 @@ export default function CurrencySelectModal(props: CurrencySelectModalProps) {
   const [filtedCurrencyMap, setFiltedCurrencyMap] = useState(
     Object.values(currencyMap)
   );
+
+  useEffect(() => {
+    setFiltedCurrencyMap(Object.values(currencyMap));
+  }, [currencyMap]);
 
   const onSearchChange = (value: string) => {
     const _value = value.toLowerCase();
