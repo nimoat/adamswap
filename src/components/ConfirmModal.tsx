@@ -14,8 +14,14 @@ import {
 } from "wagmi";
 import Steps from "./Steps";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
-import { SwapPair } from "./context";
-import { swapContractAddress, swapAbi, gasLimit } from "./constant";
+import { SwapPair, SwapType } from "./context";
+import {
+  swapContractAddress,
+  ERC20Addrs,
+  swapAbi,
+  gasLimit,
+  weth9Abi,
+} from "./constant";
 import {
   PriceInfo,
   getMinReceived,
@@ -27,6 +33,62 @@ import homeStyles from "@/styles/Home.module.less";
 import styles from "@/styles/ConfirmModal.module.less";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import Rate from "./Rate";
+import { useSwapWrite } from "./useSwapWrite";
+
+export enum SwapTypeEnum {
+  "erc204Erc20",
+  "erc204Eth",
+  "eth4Erc20",
+  "wrap",
+  "unWrap",
+}
+
+type SwapInfo = {
+  label: "Swap" | "Wrap" | "Unwrap";
+  functionName: Array<
+    | "swapAmount"
+    | "multicall"
+    | "unwrapWETH9"
+    | "refundETH"
+    | "deposit"
+    | "withdraw"
+  >;
+  abi: Array<unknown>;
+  contractAddress: `0x${string}`;
+};
+
+export const SwapInfoMap: Record<SwapTypeEnum, SwapInfo> = {
+  [SwapTypeEnum.erc204Erc20]: {
+    label: "Swap",
+    functionName: ["swapAmount"],
+    abi: swapAbi,
+    contractAddress: swapContractAddress,
+  },
+  [SwapTypeEnum.erc204Eth]: {
+    label: "Swap",
+    functionName: ["multicall", "swapAmount", "unwrapWETH9"],
+    abi: swapAbi,
+    contractAddress: swapContractAddress,
+  },
+  [SwapTypeEnum.eth4Erc20]: {
+    label: "Swap",
+    functionName: ["multicall", "swapAmount", "refundETH"],
+    abi: swapAbi,
+    contractAddress: swapContractAddress,
+  },
+  [SwapTypeEnum.wrap]: {
+    label: "Wrap",
+    functionName: ["deposit"],
+    abi: weth9Abi,
+    contractAddress: ERC20Addrs.WETH_ADDR as `0x${string}`,
+  },
+  [SwapTypeEnum.unWrap]: {
+    label: "Unwrap",
+    functionName: ["withdraw"],
+    abi: weth9Abi,
+    contractAddress: ERC20Addrs.WETH_ADDR as `0x${string}`,
+  },
+};
 
 type ConfirmModalPropsType = {
   isModalOpen: boolean;
@@ -47,6 +109,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     onSuccess,
   } = props;
   const swapPair = useContext(SwapPair);
+  const swapType = useContext(SwapType) as SwapTypeEnum;
 
   const [needApprove, setNeedApprove] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
@@ -125,15 +188,8 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     },
   });
 
-  // swap上链前
-  const { data, write } = useContractWrite({
-    abi: swapAbi,
-    functionName: "swapAmount",
-    address: swapContractAddress,
-    gas: gasLimit,
-    // gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: Error | any) => {
+  const { data, write } = useSwapWrite({
+    onError: (error) => {
       notify.error({
         message: "Error",
         description: error.shortMessage,
@@ -150,7 +206,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     onSuccess: async (data) => {
       setIsSwapping(false);
       notify.success({
-        message: `Swap success!`,
+        message: `${SwapInfoMap[swapType].label} success!`,
         description: (
           <Button
             type="link"
@@ -168,7 +224,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
       notify.error({
-        message: `Swap failed!`,
+        message: `${SwapInfoMap[swapType].label} failed!`,
         description: error.shortMessage,
         placement: "bottomRight",
       });
@@ -180,28 +236,42 @@ function ConfirmModal(props: ConfirmModalPropsType) {
   const writeSwap = useCallback(() => {
     setIsSwapping(true);
     setConfirmModalOpen(false);
+    const args =
+      swapType === SwapTypeEnum.wrap
+        ? []
+        : swapType === SwapTypeEnum.unWrap
+        ? [[swapPair[0]?.value]]
+        : [
+            [
+              getTokenChainPath(
+                searchPathInfo!.path.tokenChain,
+                searchPathInfo!.path.feeContractNumber
+              ), //pathWithFee
+              accountAddress,
+              swapPair[0]?.value,
+              (BigInt(searchPathInfo!.amount) * 95n) / 100n,
+              Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
+            ],
+          ];
     write?.({
-      args: [
-        {
-          path: getTokenChainPath(
-            searchPathInfo!.path.tokenChain,
-            searchPathInfo!.path.feeContractNumber
-          ), //pathWithFee
-          recipient: accountAddress,
-          amount: swapPair[0]?.value,
-          minAcquired: (BigInt(searchPathInfo!.amount) * 95n) / 100n,
-          deadline: Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
-        },
-      ],
+      args,
       value: swapPair[0].address ? 0n : swapPair[0].value,
     });
-  }, [accountAddress, searchPathInfo, swapPair, write, setConfirmModalOpen]);
+  }, [
+    accountAddress,
+    searchPathInfo,
+    swapPair,
+    swapType,
+    write,
+    setConfirmModalOpen,
+  ]);
 
   const onConfirmSwap = useCallback(() => {
     // 检查授权
     if (
       (!allowanceData || allowanceData < swapPair[0].value) &&
-      swapPair[0].address
+      swapPair[0].address &&
+      ![SwapTypeEnum.wrap, SwapTypeEnum.unWrap].includes(swapType)
     ) {
       approveWrites?.({
         args: [swapContractAddress, swapPair[0].value],
@@ -213,7 +283,14 @@ function ConfirmModal(props: ConfirmModalPropsType) {
       setNeedApprove(false);
       writeSwap();
     }
-  }, [allowanceData, swapPair, approveWrites, writeSwap, setConfirmModalOpen]);
+  }, [
+    allowanceData,
+    swapPair,
+    swapType,
+    approveWrites,
+    writeSwap,
+    setConfirmModalOpen,
+  ]);
 
   const steps = useMemo(() => {
     return [

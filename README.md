@@ -54,7 +54,7 @@ Check out our
 details.
 
 ## TODO
-1. wrap/unwarp
+1. ~~wrap/unwarp~~
 2. ~~计算min received~~
 3. ~~预估gas fee~~
 4. 滑点配置
