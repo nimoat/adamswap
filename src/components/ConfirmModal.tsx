@@ -247,7 +247,9 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                 searchPathInfo!.path.tokenChain,
                 searchPathInfo!.path.feeContractNumber
               ), //pathWithFee
-              accountAddress,
+              swapType === SwapTypeEnum.erc204Eth
+                ? ERC20Addrs.ZERO_ADDR
+                : accountAddress,
               swapPair[0]?.value,
               (BigInt(searchPathInfo!.amount) * 95n) / 100n,
               Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
