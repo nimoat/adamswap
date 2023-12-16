@@ -7,8 +7,12 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import React, { useEffect, useMemo, useState } from "react";
 import favicon from "@/assets/favicon.ico";
 import logo from "@/assets/logo.svg";
-import { Button, ButtonProps } from "antd";
-import { SwapOutlined, WarningOutlined } from "@ant-design/icons";
+import { Button, ButtonProps, Popconfirm, notification } from "antd";
+import {
+  SwapOutlined,
+  WarningOutlined,
+  SettingFilled,
+} from "@ant-design/icons";
 import NumericInput from "@/components/NumericInput";
 import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
@@ -22,6 +26,8 @@ import ConfirmModal, {
   SwapInfoMap,
   SwapTypeEnum,
 } from "@/components/ConfirmModal";
+import UserSetting from "@/components/UserSetting";
+import { defaultSlippage } from "@/components/constant";
 
 import styles from "@/styles/Home.module.less";
 
@@ -59,10 +65,12 @@ export default function Home(props: { priceInfo: PriceInfo }) {
   const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
   const [feeData, setFeeData] = useState<FetchFeeDataResult | undefined>();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [slippage, setSlippage] = useState<number | null>(defaultSlippage);
 
   const { address: accountAddress, isConnected } = useAccount();
   const { chain: connectChain, chains } = useNetwork();
   const { open: openWeb3Modal, close: closeWeb3Modal } = useWeb3Modal();
+  const [notify, contextHolder] = notification.useNotification();
 
   const isCorrectChain = useMemo(
     () => connectChain && chains.some((item) => item.id === connectChain.id),
@@ -380,7 +388,31 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         <main className={styles.main}>
           <div className={styles.wrapper}>
             <div className={styles.container}>
-              <div className={styles.title}>Swap</div>
+              <div className={styles.title}>
+                <span className={styles.titleText}>Swap</span>
+                {(isPrepared || true) && (
+                  <Popconfirm
+                    rootClassName={styles.settingPopover}
+                    placement="bottomRight"
+                    title={null}
+                    icon={null}
+                    description={
+                      <UserSetting
+                        slippage={slippage}
+                        setSlippage={setSlippage}
+                      />
+                    }
+                  >
+                    <Button
+                      className={styles.settingBtn}
+                      icon={<SettingFilled />}
+                      type="text"
+                    >
+                      <span className="slippage">{slippage}% slippage</span>
+                    </Button>
+                  </Popconfirm>
+                )}
+              </div>
               <NumericInput
                 currencyMap={fetchedCurrencyMap}
                 tip="Pay"
@@ -418,6 +450,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
                   searchPathInfo={searchPathInfo!}
                   feeData={feeData}
                   priceInfo={priceInfo}
+                  slippage={slippage}
                 />
               ) : (
                 <></>
@@ -432,10 +465,13 @@ export default function Home(props: { priceInfo: PriceInfo }) {
             priceInfo={priceInfo}
             searchPathInfo={searchPathInfo!}
             feeData={feeData}
+            slippage={slippage}
+            notify={notify}
             setConfirmModalOpen={setIsConfirmModalOpen}
             onSuccess={() => fetchAllBalance()}
           />
         )}
+        {contextHolder}
       </SwapType.Provider>
     </SwapPair.Provider>
   );

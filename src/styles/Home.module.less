@@ -185,7 +185,34 @@ span.button:hover {
   padding: 10px;
 
   .title {
-    padding: @sizeSM + 0px @sizeMS + 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: @sizeSM + 0px 0;
+
+    .titleText {
+      padding-left: @sizeSM + 0px;
+    }
+
+    .settingBtn {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      // padding: 3px;
+
+      :global {
+        .ant-btn-icon {
+          margin-inline-start: 8px;
+          margin-inline-end: 0;
+          color: @colorTextSecondary;
+        }
+
+        .slippage {
+          font-size: 13px;
+          color: @colorTextTertiary;
+        }
+      }
+    }
   }
 
   .divide {
@@ -240,6 +267,14 @@ span.button:hover {
   }
 }
 
+.settingPopover {
+  :global {
+    .ant-popconfirm-buttons {
+      display: none;
+    }
+  }
+}
+
 .swap-primary-btn {
   width: 100%;
   height: unset;
@@ -255,17 +290,17 @@ span.button:hover {
     .ant-descriptions-row {
       .ant-descriptions-item {
         padding-bottom: 8px;
-    
+
         .ant-descriptions-item-label,
         .ant-descriptions-item-content {
           font-size: 13px;
         }
-    
+
         .ant-descriptions-item-label {
           width: 120px;
           flex-grow: 0;
         }
-    
+
         .ant-descriptions-item-content {
           flex-grow: 1;
           display: flex;
@@ -273,7 +308,7 @@ span.button:hover {
         }
       }
     }
-    
+
     .ant-descriptions-row:last-child {
       .ant-descriptions-item {
         padding: 0;

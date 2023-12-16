@@ -23,11 +23,19 @@ export type PriceInfo = {
 };
 
 /**
- * fee strategy
- * 1%
+ * default slippage 0.5
+ * myfee strategy 988 / 1000
  */
-export const getMinReceived = (originOutputValue: bigint, decimals: number) => {
-  const value = (originOutputValue * 990n) / 1001n;
+export const getMinReceived = (
+  originOutputValue: bigint,
+  decimals: number,
+  slippage = 0,
+  isMyFee = false
+) => {
+  let value = (originOutputValue * getSlippageBigint(slippage)) / 1000_000n;
+  if (isMyFee) {
+    value = (value * 988n) / 1000n;
+  }
   return {
     value,
     formated: getNFloatNumber(formatUnits(value, decimals), 5),
@@ -43,3 +51,8 @@ export const getNetworkFee = (
   getNFloatNumber(
     Number(formatEther(gasPrice * gasLimit)) * priceInfo.data.ETH
   );
+
+/** 使用时需要除以1000_000n (6个0) */
+export const getSlippageBigint = (v: number) => {
+  return BigInt((100 - v) * 10000);
+};

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/logo.svg";
-import { Button, Modal, Descriptions, Divider, notification } from "antd";
+import { Button, Modal, Descriptions, Divider } from "antd";
 import { LoadingOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import type { FetchFeeDataResult } from "@wagmi/core";
 // import { parseGwei } from "viem";
@@ -28,12 +28,13 @@ import {
   getNFloatNumber,
   getNetworkFee,
 } from "./utils";
-
-import homeStyles from "@/styles/Home.module.less";
-import styles from "@/styles/ConfirmModal.module.less";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import Rate from "./Rate";
 import { useSwapWrite } from "./useSwapWrite";
+import { NotificationInstance } from "antd/es/notification/interface";
+
+import homeStyles from "@/styles/Home.module.less";
+import styles from "@/styles/ConfirmModal.module.less";
 
 export enum SwapTypeEnum {
   "erc204Erc20",
@@ -95,6 +96,8 @@ type ConfirmModalPropsType = {
   priceInfo: PriceInfo;
   searchPathInfo: PathQueryResult;
   feeData: FetchFeeDataResult | undefined;
+  slippage: number | null;
+  notify: NotificationInstance;
   setConfirmModalOpen: (v: boolean) => void;
   onSuccess: () => void;
 };
@@ -105,9 +108,12 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     priceInfo,
     searchPathInfo,
     feeData,
+    slippage,
+    notify,
     setConfirmModalOpen,
     onSuccess,
   } = props;
+
   const swapPair = useContext(SwapPair);
   const swapType = useContext(SwapType) as SwapTypeEnum;
 
@@ -116,7 +122,6 @@ function ConfirmModal(props: ConfirmModalPropsType) {
   const [isSwapping, setIsSwapping] = useState(false);
 
   const { address: accountAddress } = useAccount();
-  const [notify, contextHolder] = notification.useNotification();
 
   const swapPairPlus = useMemo(() => {
     return swapPair.map((item, index) => ({
@@ -251,7 +256,12 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                 ? ERC20Addrs.ZERO_ADDR
                 : accountAddress,
               swapPair[0]?.value,
-              (BigInt(searchPathInfo!.amount) * 95n) / 100n,
+              getMinReceived(
+                swapPair[1].value,
+                swapPair[1].decimals!,
+                slippage ?? 0,
+                false
+              ).value,
               Math.floor(Date.now() / 1000) + 60 * 10, // 10 分钟
             ],
           ];
@@ -264,6 +274,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     searchPathInfo,
     swapPair,
     swapType,
+    slippage,
     write,
     setConfirmModalOpen,
   ]);
@@ -368,13 +379,19 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                   2
                 )}%`,
               },
-              { key: 2, label: "Max. slippage", children: "0.5%" },
+              { key: 2, label: "Max. slippage", children: `${slippage}%` },
               {
                 key: 3,
                 label: "Min. received",
                 children: `${
-                  getMinReceived(swapPair[1].value, swapPair[1].decimals!)
-                    .formated
+                  [SwapTypeEnum.wrap, SwapTypeEnum.unWrap].includes(swapType!)
+                    ? swapPair[1].formatted
+                    : getMinReceived(
+                        swapPair[1].value,
+                        swapPair[1].decimals!,
+                        slippage ?? 0,
+                        true
+                      ).formated
                 } ${swapPair[1].symbol}`,
               },
               {
@@ -458,7 +475,6 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         )}
         <div className="tip">Proceed in your wallet</div>
       </Modal>
-      {contextHolder}
     </>
   );
 }

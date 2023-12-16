@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Collapse, Descriptions } from "antd";
-import { SwapPair } from "./context";
+import { SwapPair, SwapType } from "./context";
 import {
   PriceInfo,
   getMinReceived,
@@ -15,17 +15,20 @@ import type { FetchFeeDataResult } from "@wagmi/core";
 import { gasLimit } from "./constant";
 
 import homeStyles from "@/styles/Home.module.less";
+import { SwapTypeEnum } from "./ConfirmModal";
 
 type PreviewPanelProps = {
   searchPathInfo: PathQueryResult;
   feeData: FetchFeeDataResult | undefined;
   priceInfo: PriceInfo;
+  slippage: number | null;
 };
 
 const PreviewPanel = (props: PreviewPanelProps) => {
-  const { searchPathInfo, feeData, priceInfo } = props;
+  const { searchPathInfo, feeData, priceInfo, slippage } = props;
 
   const swapPair = useContext(SwapPair);
+  const swapType = useContext(SwapType);
 
   const networkFee = feeData?.gasPrice
     ? getNetworkFee(feeData.gasPrice, gasLimit, priceInfo)
@@ -62,13 +65,19 @@ const PreviewPanel = (props: PreviewPanelProps) => {
                     2
                   )}%`,
                 },
-                { key: 2, label: "Max. slippage", children: "0.5%" },
+                { key: 2, label: "Max. slippage", children: `${slippage}%` },
                 {
                   key: 3,
                   label: "Min. received",
                   children: `${
-                    getMinReceived(swapPair[1].value, swapPair[1].decimals!)
-                      .formated
+                    [SwapTypeEnum.wrap, SwapTypeEnum.unWrap].includes(swapType!)
+                      ? swapPair[1].formatted
+                      : getMinReceived(
+                          swapPair[1].value,
+                          swapPair[1].decimals!,
+                          slippage ?? 0,
+                          true
+                        ).formated
                   } ${swapPair[1].symbol}`,
                 },
                 {

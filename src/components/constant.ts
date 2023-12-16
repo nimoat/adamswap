@@ -13,7 +13,9 @@ export const swapContractAddress = "0xfdEA8c139F282b14E09D27528a316c7e8AA27878";
 
 // export const approveGasLimit = 30_000n; // test
 
-export const gasLimit = 1_800_000n; // test
+export const gasLimit = 1_800_000n; // test @PRD
+
+export const defaultSlippage = 5; // @PRD
 
 export const swapAbi = [
   {

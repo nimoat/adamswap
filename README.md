@@ -57,7 +57,7 @@ details.
 1. ~~wrap/unwarp~~
 2. ~~计算min received~~
 3. ~~预估gas fee~~
-4. 滑点配置
+4. ~~滑点配置~~
 5. ~~swap成功后刷新首页状态~~
 6. LOGO和产品名称
 7. rate刷新
