@@ -35,7 +35,7 @@ const WETH_ADDR = currencyMap.WETH.address;
 const WETH_SYMBOL = "WETH";
 const ETH_SYMBOL = "ETH";
 
-export const getStaticProps = async () => {
+export const client_getStaticProps = async () => {
   const params = Object.keys(currencyMap).reduce(
     (pre: URLSearchParams, cur: string) => {
       pre.append("t", cur);
@@ -43,7 +43,6 @@ export const getStaticProps = async () => {
     },
     new URLSearchParams()
   );
-
   const res = await fetch(
     `https://api.izumi.finance/api/v1/token_info/price_info/?${params.toString()}`
   );
@@ -51,8 +50,8 @@ export const getStaticProps = async () => {
   return { props: { _priceInfo: repo } };
 };
 
-export default function Home(props: { _priceInfo: PriceInfo }) {
-  const { _priceInfo } = props;
+export default function Home() {
+  // const { _priceInfo } = props;
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
@@ -125,12 +124,11 @@ export default function Home(props: { _priceInfo: PriceInfo }) {
 
   // 仅客户端渲染时需要
   useEffect(() => {
-    getStaticProps().then((res) => setPriceInfo(res.props._priceInfo));
+    client_getStaticProps().then((res) => setPriceInfo(res.props._priceInfo));
   }, []);
-
-  useEffect(() => {
-    setPriceInfo((p) => p ?? _priceInfo);
-  }, [_priceInfo]);
+  // useEffect(() => {
+  //   setPriceInfo((p) => p ?? _priceInfo);
+  // }, [_priceInfo]);
 
   useEffect(() => {
     if (isConnected && isCorrectChain) {
