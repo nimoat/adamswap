@@ -11,7 +11,7 @@ const nextConfig = {
   images: {
     unoptimized: true, // static导出
   },
-  basePath: "/adamswap", // 适配 github page
+  // basePath: "/adamswap", // 适配 github page, 使用custom domain则不需要
   transpilePackages: ["ahooks"], // 解决Cannot use import statement outside a module
   reactStrictMode: true,
   lessLoaderOptions: {
