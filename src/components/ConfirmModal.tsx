@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import Image from "next/image";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo.png";
 import { Button, Modal, Descriptions, Divider } from "antd";
 import { LoadingOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import type { FetchFeeDataResult } from "@wagmi/core";
@@ -411,7 +411,12 @@ function ConfirmModal(props: ConfirmModalPropsType) {
 
       <Modal
         title={
-          <Image src={logo.src} alt="Currency Logo" height="32" width="203" />
+          <div className={homeStyles.logo}>
+            <Image src={logo.src} alt="EasySwap" height="30" width="30" />
+            <div className={homeStyles.logoName} style={{ fontSize: 18 }}>
+              EasySwap
+            </div>
+          </div>
         }
         wrapClassName={styles["steps-modal"]}
         centered

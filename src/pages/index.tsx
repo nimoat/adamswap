@@ -6,7 +6,7 @@ import { fetchBalance, fetchFeeData, FetchFeeDataResult } from "@wagmi/core";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import React, { useEffect, useMemo, useState } from "react";
 import favicon from "@/assets/favicon.ico";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo.png";
 import { Button, ButtonProps, Popconfirm, notification } from "antd";
 import {
   SwapOutlined,
@@ -48,11 +48,11 @@ export const getStaticProps = async () => {
     `https://api.izumi.finance/api/v1/token_info/price_info/?${params.toString()}`
   );
   const repo = await res.json();
-  return { props: { priceInfo: repo } };
+  return { props: { _priceInfo: repo } };
 };
 
-export default function Home(props: { priceInfo: PriceInfo }) {
-  const { priceInfo } = props;
+export default function Home(props: { _priceInfo: PriceInfo }) {
+  const { _priceInfo } = props;
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
@@ -66,6 +66,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
   const [feeData, setFeeData] = useState<FetchFeeDataResult | undefined>();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [slippage, setSlippage] = useState<number | null>(defaultSlippage);
+  const [priceInfo, setPriceInfo] = useState<PriceInfo>();
 
   const { address: accountAddress, isConnected } = useAccount();
   const { chain: connectChain, chains } = useNetwork();
@@ -121,6 +122,15 @@ export default function Home(props: { priceInfo: PriceInfo }) {
       ]);
     });
   };
+
+  // 仅客户端渲染时需要
+  useEffect(() => {
+    getStaticProps().then((res) => setPriceInfo(res.props._priceInfo));
+  }, []);
+
+  useEffect(() => {
+    setPriceInfo((p) => p ?? _priceInfo);
+  }, [_priceInfo]);
 
   useEffect(() => {
     if (isConnected && isCorrectChain) {
@@ -352,7 +362,8 @@ export default function Home(props: { priceInfo: PriceInfo }) {
           />
           <div className={styles.header}>
             <div className={styles.logo}>
-              <Image src={logo.src} alt="EasySwap" height="32" width="203" />
+              <Image src={logo.src} alt="EasySwap" height="40" width="40" />
+              <div className={styles.logoName}>EasySwap</div>
             </div>
             <div className={styles.buttons}>
               <div
@@ -417,7 +428,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
                 currencyMap={fetchedCurrencyMap}
                 tip="Pay"
                 index={0}
-                priceInfo={priceInfo}
+                priceInfo={priceInfo!}
                 disabled={!isPrepared}
                 onSelect={(e) => onCurrencySelect(e, 0)}
                 onChange={onInputAmountChange}
@@ -431,7 +442,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
                 currencyMap={fetchedCurrencyMap}
                 tip="Receive"
                 index={1}
-                priceInfo={priceInfo}
+                priceInfo={priceInfo!}
                 disabled={!isPrepared}
                 onSelect={(e) => onCurrencySelect(e, 1)}
                 // onChange={(v) =>
@@ -449,7 +460,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
                 <PreviewPanel
                   searchPathInfo={searchPathInfo!}
                   feeData={feeData}
-                  priceInfo={priceInfo}
+                  priceInfo={priceInfo!}
                   slippage={slippage}
                 />
               ) : (
@@ -462,7 +473,7 @@ export default function Home(props: { priceInfo: PriceInfo }) {
         {swapPair.every((sp) => !!sp.symbol) && (
           <ConfirmModal
             isModalOpen={isConfirmModalOpen}
-            priceInfo={priceInfo}
+            priceInfo={priceInfo!}
             searchPathInfo={searchPathInfo!}
             feeData={feeData}
             slippage={slippage}

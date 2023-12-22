@@ -1,7 +1,7 @@
 import ETH from "../assets/currencyLogo/ETH.png";
 import WETH from "../assets/currencyLogo/WETH.png";
 import USDT from "../assets/currencyLogo/USDT.png";
-import IZI from "../assets/currencyLogo/IZI.svg";
+// import IZI from "../assets/currencyLogo/IZI.svg";
 // import DAI from "../assets/currencyLogo/DAI.png";
 // import WBTC from "../assets/currencyLogo/WBTC.png";
 // import LINK from "../assets/currencyLogo/LINK.png";
@@ -40,11 +40,11 @@ const currencyMap: Record<string, Currency> = {
     logoSrc: USDT.src,
     address: ERC20Addrs.USDT_ADDR,
   },
-  iZi: {
-    name: "iZUMi Token",
-    logoSrc: IZI.src,
-    address: ERC20Addrs.IZI_ADDR,
-  },
+  // iZi: {
+  //   name: "iZUMi Token",
+  //   logoSrc: IZI.src,
+  //   address: ERC20Addrs.IZI_ADDR,
+  // },
   // USDC: {
   //   name: "Bridged USDC",
   //   logoSrc: USDC.src,
