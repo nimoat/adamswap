@@ -8,6 +8,7 @@ import { ConfigProvider } from "antd";
 import theme from "../theme/themeConfig";
 import Footer from "@/components/Footer";
 import favicon from "@/assets/favicon.ico";
+import logo from "@/assets/logo.png";
 
 import "@/styles/globals.css";
 
@@ -17,10 +18,11 @@ const chains = [scrollSepolia];
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 const metadata = {
-  name: "Next Starter Template",
-  description: "A Next.js starter template with Web3Modal v3 + Wagmi",
-  url: "https://web3modal.com",
-  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+  name: "EasySwap App",
+  description:
+    "The most user-friendly DEX Aggregator, focusing on Layer2 ecosystem.",
+  url: "/",
+  icons: [logo.src],
 };
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
