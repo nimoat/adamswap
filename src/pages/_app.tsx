@@ -18,10 +18,9 @@ const chains = [scrollSepolia];
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 const metadata = {
-  name: "EasySwap App",
-  description:
-    "The most user-friendly DEX Aggregator, focusing on Layer2 ecosystem.",
-  url: "/",
+  name: "EasySwap",
+  description: "EasySwap",
+  url: global.location?.host,
   icons: [logo.src],
 };
 
