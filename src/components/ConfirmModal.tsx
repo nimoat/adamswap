@@ -438,7 +438,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
               height="36"
               width="36"
             />
-            <p>Enable spending {swapPair[0].symbol} on EZSwap</p>
+            <p>Enable spending {swapPair[0].symbol} on EasySwap</p>
           </>
         )}
         <LoadingOutlined />
