@@ -1,0 +1,948 @@
+[
+  {
+    "name": "Ontology Gas",
+    "symbol": "ONG",
+    "chains": [
+      5851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/ong.png",
+    "contracts": {
+      "5851": {
+        "address": "0xe8cf015f797877a9a23e80447429c0b0f04e114b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped ONG",
+    "symbol": "WONG",
+    "chains": [
+      5851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/ong.png",
+    "contracts": {
+      "5851": {
+        "address": "0xe8cf015f797877a9a23e80447429c0b0f04e114b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Arctic Token",
+    "symbol": "ARC",
+    "chains": [
+      1313161555
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/arc.png",
+    "contracts": {
+      "1313161555": {
+        "address": "0xa341a31CCdD570cAEab465c96D64c880db609021",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Aurora Token",
+    "symbol": "AURORA",
+    "chains": [
+      1313161555
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/aurora.png",
+    "contracts": {
+      "1313161555": {
+        "address": "0xcC2DE5D1A8154f7fa0e80a6732a38422D8fBEB10",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Rollux Syscoin Token",
+    "symbol": "RSYS",
+    "chains": [
+      57000
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/sys.png",
+    "contracts": {
+      "57000": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped Rollux Syscoin Token",
+    "symbol": "WRSYS",
+    "chains": [
+      57000
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/sys.png",
+    "contracts": {
+      "57000": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "iZUMi Token",
+    "symbol": "iZi",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/izumi.svg",
+    "chains": [
+      1337,
+      12008,
+      12021,
+      7001,
+      97,
+      1313161555,
+      534353,
+      280,
+      57000,
+      5001,
+      5851,
+      59140,
+      3441005,
+      1351057110,
+      2358,
+      534351,
+      195
+    ],
+    "contracts": {
+      "97": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      },
+      "195": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      },
+      "280": {
+        "address": "0xA5900cce51c45Ab9730039943B3863C822342034",
+        "decimal": 18
+      },
+      "1337": {
+        "address": "0xEe5e3852434eB67F8e9E97015e32845861ea15E8",
+        "decimal": 18
+      },
+      "2358": {
+        "address": "0xEB122DE19FeA9eD039E2d087113db26017f5F91a",
+        "decimal": 18
+      },
+      "5001": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "5851": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "7001": {
+        "address": "0xb0453a1bAf6056393897e60dfd851C61A825ef67",
+        "decimal": 18
+      },
+      "12008": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "12021": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 18
+      },
+      "57000": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 18
+      },
+      "59140": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "534351": {
+        "address": "0xEB122DE19FeA9eD039E2d087113db26017f5F91a",
+        "decimal": 18
+      },
+      "534353": {
+        "address": "0xdB1A8CF7e6d2fa2C0775D090BCc2cfB3A9e00CdC",
+        "decimal": 18
+      },
+      "3441005": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      },
+      "1313161555": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "1351057110": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "iZUMi Bond USD",
+    "symbol": "iUSD",
+    "chains": [
+      97,
+      1313161555,
+      280,
+      5851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/iusd.png",
+    "contracts": {
+      "97": {
+        "address": "0x60FE1bE62fa2082b0897eA87DF8D2CfD45185D30",
+        "decimal": 18
+      },
+      "280": {
+        "address": "0xC0ddcc53b3F971EdeEc65E69D5cb01B518a7F7C8",
+        "decimal": 18
+      },
+      "5851": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      },
+      "1313161555": {
+        "address": "0xb0453a1bAf6056393897e60dfd851C61A825ef67",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Binance USD",
+    "symbol": "BUSD",
+    "chains": [
+      97
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/busd.png",
+    "contracts": {
+      "97": {
+        "address": "0xd88972676f5D0997c8150A3d2C4634CbaaDD3396",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdc.png",
+    "chains": [
+      1337,
+      12008,
+      97,
+      1313161555,
+      57000,
+      1351057110,
+      12021,
+      195
+    ],
+    "contracts": {
+      "97": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 6
+      },
+      "195": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      },
+      "1337": {
+        "address": "0xe507AAC9eFb2A08F53C7BC73B3B1b8BCf883E41B",
+        "decimal": 6
+      },
+      "12008": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 18
+      },
+      "12021": {
+        "address": "0xb0453a1bAf6056393897e60dfd851C61A825ef67",
+        "decimal": 18
+      },
+      "57000": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      },
+      "1313161555": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 6
+      },
+      "1351057110": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Tether USD",
+    "symbol": "USDT",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdt.png",
+    "chains": [
+      1337,
+      12008,
+      7001,
+      97,
+      1313161555,
+      534353,
+      57000,
+      3441005,
+      2358,
+      534351,
+      12021,
+      195
+    ],
+    "contracts": {
+      "97": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 6
+      },
+      "195": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "1337": {
+        "address": "0x2d2bA91b026E08e0f23Eb01d7ecAb0e7E279a45f",
+        "decimal": 6
+      },
+      "2358": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      },
+      "5001": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      },
+      "7001": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 18
+      },
+      "12008": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      },
+      "12021": {
+        "address": "0x2A2E08ea99E63482BDad8Bf69c7b69752F07736F",
+        "decimal": 18
+      },
+      "57000": {
+        "address": "0x876508837C162aCedcc5dd7721015E83cbb4e339",
+        "decimal": 18
+      },
+      "534351": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      },
+      "534353": {
+        "address": "0xe9805A0bA7A8E253fd93A3f9b360619c4819da50",
+        "decimal": 18
+      },
+      "3441005": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 18
+      },
+      "1313161555": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 6
+      }
+    }
+  },
+  {
+    "name": "Ether",
+    "symbol": "ETH",
+    "chains": [
+      1337,
+      1313161555,
+      534353,
+      280,
+      59140,
+      3441005,
+      2358,
+      534351
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/eth.png",
+    "contracts": {
+      "280": {
+        "address": "0x8C3e3f2983DB650727F3e05B7a7773e4D641537B",
+        "decimal": 18
+      },
+      "1337": {
+        "address": "0x3AD23A16A81Cd40010F39309876978F20DD2f682",
+        "decimal": 18
+      },
+      "2358": {
+        "address": "0x4200000000000000000000000000000000000001",
+        "decimal": 18
+      },
+      "59140": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      },
+      "534351": {
+        "address": "0xfa6a407c4C49Ea1D46569c1A4Bcf71C3437bE54c",
+        "decimal": 18
+      },
+      "534353": {
+        "address": "0xCE7fe0A153EF73759d253372b783E12a04849F35",
+        "decimal": 18
+      },
+      "3441005": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      },
+      "1313161555": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped Ether",
+    "symbol": "WETH",
+    "chains": [
+      1313161555,
+      534353,
+      280,
+      5001,
+      59140,
+      3441005,
+      2358,
+      534351
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/WETH.png",
+    "contracts": {
+      "280": {
+        "address": "0x8C3e3f2983DB650727F3e05B7a7773e4D641537B",
+        "decimal": 18
+      },
+      "2358": {
+        "address": "0x4200000000000000000000000000000000000001",
+        "decimal": 18
+      },
+      "5001": {
+        "address": "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
+        "decimal": 18
+      },
+      "59140": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      },
+      "534351": {
+        "address": "0xfa6a407c4C49Ea1D46569c1A4Bcf71C3437bE54c",
+        "decimal": 18
+      },
+      "534353": {
+        "address": "0xCE7fe0A153EF73759d253372b783E12a04849F35",
+        "decimal": 18
+      },
+      "3441005": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      },
+      "1313161555": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "BNB",
+    "symbol": "BNB",
+    "chains": [
+      97
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/bnb.png",
+    "contracts": {
+      "97": {
+        "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped BNB",
+    "symbol": "WBNB",
+    "chains": [
+      97
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/bnb.png",
+    "contracts": {
+      "97": {
+        "address": "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "BIT Dao",
+    "symbol": "BIT",
+    "chains": [
+      1337,
+      97,
+      5001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/bit.png",
+    "contracts": {
+      "97": {
+        "address": "0xac360dc0F8EF1C94Ab4034220E0A01567acbFdE4",
+        "decimal": 18
+      },
+      "1337": {
+        "address": "0x41BC21bdcF0FA87ae6eeFcBE0e4dB29dB2b650C1",
+        "decimal": 18
+      },
+      "5001": {
+        "address": "0x69AC69b272f96F5f17DDD9da3832ad9Dc86D1d8A",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped BIT",
+    "symbol": "WBIT",
+    "chains": [
+      5001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/bit.png",
+    "contracts": {
+      "5001": {
+        "address": "0x69AC69b272f96F5f17DDD9da3832ad9Dc86D1d8A",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Decentralized Eternal Virtual Traveller",
+    "symbol": "DEVT",
+    "chains": [
+      1337
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/devt.png",
+    "contracts": {
+      "1337": {
+        "address": "0xD93FfD9B4d5D643A175B7DcBf4Fb0dA0016D35C7",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "YIN Finance",
+    "symbol": "YIN",
+    "chains": [
+      1337,
+      97
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/yin.png",
+    "contracts": {
+      "97": {
+        "address": "0xB2cdca00D1B07064064e83C377aE9A490ad06bc2",
+        "decimal": 18
+      },
+      "1337": {
+        "address": "0x628571078add0031Ff6E9975AE6ddE1123fC423b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Gas Zero Token",
+    "symbol": "GAS0",
+    "chains": [
+      12021
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/gaszero.png",
+    "contracts": {
+      "12021": {
+        "address": "0xC6C7c2edF70A3245ad6051E93809162B9758ce08",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped GAS0",
+    "symbol": "WGAS0",
+    "chains": [
+      12021
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/gaszero.png",
+    "contracts": {
+      "12021": {
+        "address": "0xC6C7c2edF70A3245ad6051E93809162B9758ce08",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "USDC (official bridge)",
+    "symbol": "USDC",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdc.png",
+    "contracts": {
+      "59140": {
+        "address": "0xf56dc6695cF1f5c364eDEbC7Dc7077ac9B586068",
+        "decimal": 6
+      }
+    }
+  },
+  {
+    "name": "USDT (official bridge)",
+    "symbol": "USDT",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdt.png",
+    "contracts": {
+      "59140": {
+        "address": "0x1990BC6dfe2ef605Bfc08f5A23564dB75642Ad73",
+        "decimal": 6
+      }
+    }
+  },
+  {
+    "name": "DAI (official bridge)",
+    "symbol": "DAI",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/dai.png",
+    "contracts": {
+      "59140": {
+        "address": "0x8741Ba6225A6BF91f9D73531A98A89807857a2B3",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "UNI (official bridge)",
+    "symbol": "UNI",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/uni.png",
+    "contracts": {
+      "59140": {
+        "address": "0x7823E8DCC8bfc23EA3AC899EB86921f90e80F499",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "HOP (official bridge)",
+    "symbol": "HOP",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/hop.png",
+    "contracts": {
+      "59140": {
+        "address": "0x6F03052743CD99ce1b29265E377e320CD24Eb632",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "BNB (official bridge)",
+    "symbol": "BNB",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/bnb.png",
+    "contracts": {
+      "59140": {
+        "address": "0x5471ea8f739dd37E9B81Be9c5c77754D8AA953E4",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "BUSD (official bridge)",
+    "symbol": "BUSD",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/busd.png",
+    "contracts": {
+      "59140": {
+        "address": "0x7d43AABC515C356145049227CeE54B608342c0ad",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "MATIC (official bridge)",
+    "symbol": "MATIC",
+    "chains": [
+      59140
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/matic.png",
+    "contracts": {
+      "59140": {
+        "address": "0xcAA61BCAe7D37Fe9C33c0D8671448254eef44D63",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "USDC (official bridge)",
+    "symbol": "USDC",
+    "chains": [
+      5001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdc.png",
+    "contracts": {
+      "5001": {
+        "address": "0x2ED3c15eC59CE827c4aBBabfF76d37562558437D",
+        "decimal": 6
+      }
+    }
+  },
+  {
+    "name": "Tether (Mantle native)",
+    "symbol": "USDT",
+    "chains": [
+      5001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdt.png",
+    "contracts": {
+      "5001": {
+        "address": "0x6AECfe44225A50895e9EC7ca46377B9397D1Bb5b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Mantle Token",
+    "symbol": "MNT",
+    "chains": [
+      5001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/mnt.png",
+    "contracts": {
+      "5001": {
+        "address": "0x6e1723460D190B4A092a2c13BA42BcC57d71870b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped MNT",
+    "symbol": "WMNT",
+    "chains": [
+      5001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/mnt.png",
+    "contracts": {
+      "5001": {
+        "address": "0x6e1723460D190B4A092a2c13BA42BcC57d71870b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Tether",
+    "symbol": "USDT",
+    "chains": [
+      5611
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdt.png",
+    "contracts": {
+      "5611": {
+        "address": "0x6a7436775c0d0B70cfF4c5365404ec37c9d9aF4b",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "iZUMi token",
+    "symbol": "iZi",
+    "chains": [
+      5611
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/izi.png",
+    "contracts": {
+      "5611": {
+        "address": "0x2A2E08ea99E63482BDad8Bf69c7b69752F07736F",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "opBNB",
+    "symbol": "BNB",
+    "chains": [
+      5611
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/opbnb.png",
+    "contracts": {
+      "5611": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped opBNB",
+    "symbol": "WBNB",
+    "chains": [
+      5611
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/opbnb.png",
+    "contracts": {
+      "5611": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Opside token",
+    "symbol": "IDE",
+    "chains": [
+      12008
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/ide.png",
+    "contracts": {
+      "12008": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped IDE",
+    "symbol": "WIDE",
+    "chains": [
+      12008
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/ide.png",
+    "contracts": {
+      "12008": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "USDC (official bridge)",
+    "symbol": "USDC",
+    "chains": [
+      534353
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdc.png",
+    "contracts": {
+      "534353": {
+        "address": "0x67aE69Fd63b4fc8809ADc224A9b82Be976039509",
+        "decimal": 6
+      }
+    }
+  },
+  {
+    "name": "OKB",
+    "symbol": "OKB",
+    "chains": [
+      195
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/okb.png",
+    "contracts": {
+      "195": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Wrapped OKB",
+    "symbol": "WOKB",
+    "chains": [
+      195
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/okb.png",
+    "contracts": {
+      "195": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "USDC",
+    "symbol": "USDC",
+    "chains": [
+      43851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdc.png",
+    "contracts": {
+      "43851": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "wrapped USDC",
+    "symbol": "WUSDC",
+    "chains": [
+      43851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdc.png",
+    "contracts": {
+      "43851": {
+        "address": "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "iZUMi Token",
+    "symbol": "iZi",
+    "chains": [
+      43851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/izumi.svg",
+    "contracts": {
+      "43851": {
+        "address": "0xEB122DE19FeA9eD039E2d087113db26017f5F91a",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Tether",
+    "symbol": "USDT",
+    "chains": [
+      43851
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdt.png",
+    "contracts": {
+      "43851": {
+        "address": "0x551197e6350936976DfFB66B2c3bb15DDB723250",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "aZETA",
+    "symbol": "aZETA",
+    "chains": [
+      7001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/zeta.png",
+    "contracts": {
+      "7001": {
+        "address": "0x5F0b1a82749cb4E2278EC87F8BF6B618dC71a8bf",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "wrapped ZETA",
+    "symbol": "WZETA",
+    "chains": [
+      7001
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/zeta.png",
+    "contracts": {
+      "7001": {
+        "address": "0x5F0b1a82749cb4E2278EC87F8BF6B618dC71a8bf",
+        "decimal": 18
+      }
+    }
+  }
+]
