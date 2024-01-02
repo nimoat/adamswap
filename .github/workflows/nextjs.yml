@@ -73,7 +73,11 @@ jobs:
       #     #
       #     # You may remove this line if you want to manage the configuration yourself.
       #     static_site_generator: next
-      - name: Build with Next.js
+      - name: Build release with Next.js
+        if: ${{ vars.BUILD_ENV == 'release' }}
+        run: ${{ steps.detect-package-manager.outputs.runner }} build:release
+      - name: Build alpha with Next.js
+        if: ${{ vars.BUILD_ENV != 'release' }}
         run: ${{ steps.detect-package-manager.outputs.runner }} build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2

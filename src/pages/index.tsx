@@ -75,6 +75,8 @@ export default function Home() {
     [connectChain, chains]
   );
 
+  console.log("BUILD_ENV:", process.env.BUILD_ENV);
+
   const swapType = useMemo(() => {
     if (swapPair.every((sp) => !!sp.symbol)) {
       if (swapPair[0].symbol === ETH_SYMBOL) {
