@@ -3,8 +3,8 @@ import Head from "next/head";
 import { WagmiConfig } from "wagmi";
 import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
-import { scrollSepolia } from "wagmi/chains";
 import { ConfigProvider } from "antd";
+import { supportChains } from "@/components/constant";
 import theme from "../theme/themeConfig";
 import Footer from "@/components/Footer";
 import favicon from "@/assets/favicon.ico";
@@ -12,7 +12,7 @@ import logo from "@/assets/logo.png";
 
 import "@/styles/globals.css";
 
-const chains = [scrollSepolia];
+const chains = supportChains;
 
 // 1. Get projectID at https://cloud.walletconnect.com
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";

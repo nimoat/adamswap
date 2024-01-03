@@ -12,7 +12,6 @@ import {
   SettingFilled,
 } from "@ant-design/icons";
 import NumericInput from "@/components/NumericInput";
-import currencyMap from "@/components/currencyMap";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
 import PreviewPanel from "@/components/PreviewPanel";
 import { useDebounceFn } from "ahooks";
@@ -21,26 +20,28 @@ import { searchPath } from "@/components/onchainUtils";
 import { PriceInfo, getNFloatNumber } from "@/components/utils";
 import { SwapPair, SwapType } from "@/components/context";
 import ConfirmModal, {
-  SwapInfoMap,
+  getSwapInfoMap,
   SwapTypeEnum,
 } from "@/components/ConfirmModal";
 import UserSetting from "@/components/UserSetting";
-import { defaultSlippage } from "@/components/constant";
+import {
+  defaultSlippage,
+  getDefaultTokenSymbol,
+  getTokenList,
+  getWETHAddr,
+} from "@/components/constant";
 
 import styles from "@/styles/Home.module.less";
 
-const WETH_ADDR = currencyMap.WETH.address;
 const WETH_SYMBOL = "WETH";
 const ETH_SYMBOL = "ETH";
 
-export const client_getStaticProps = async () => {
-  const params = Object.keys(currencyMap).reduce(
-    (pre: URLSearchParams, cur: string) => {
-      pre.append("t", cur);
-      return pre;
-    },
-    new URLSearchParams()
-  );
+export const client_getStaticProps = async (chainId: number) => {
+  const tokenList = getTokenList(chainId);
+  const params = tokenList.reduce((pre: URLSearchParams, cur: Currency) => {
+    pre.append("t", cur.symbol!);
+    return pre;
+  }, new URLSearchParams());
   const res = await fetch(
     `https://api.izumi.finance/api/v1/token_info/price_info/?${params.toString()}`
   );
@@ -56,7 +57,7 @@ export default function Home() {
   const [fetchedCurrencyMap, setFetchedCurrencyMap] =
     useState<Record<string, Currency>>();
   const [swapPair, setSwapPair] = useState<[CurrencyV, CurrencyV]>([
-    { ...currencyMap.ETH, value: 0n, formatted: "" },
+    { value: 0n, formatted: "" },
     { value: 0n, formatted: "" },
   ]);
   const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
@@ -74,8 +75,6 @@ export default function Home() {
     () => connectChain && chains.some((item) => item.id === connectChain.id),
     [connectChain, chains]
   );
-
-  console.log("NEXT_PUBLIC_NEXT_PUBLIC:", process.env.NEXT_PUBLIC_BUILD_ENV);
 
   const swapType = useMemo(() => {
     if (swapPair.every((sp) => !!sp.symbol)) {
@@ -95,17 +94,27 @@ export default function Home() {
     }
   }, [swapPair]);
 
+  const tokenList = useMemo(() => {
+    if (connectChain?.id) {
+      return getTokenList(connectChain.id);
+    }
+    return [];
+  }, [connectChain]);
+
   const fetchAllBalance = () => {
     Promise.all(
-      Object.entries(currencyMap).map(([key, map]) =>
+      tokenList.map((token) =>
         fetchBalance({
           address: accountAddress as `0x${string}`,
-          token: map.address as `0x${string}`,
+          token:
+            token.symbol === getDefaultTokenSymbol(connectChain!.id)
+              ? undefined
+              : (token.address as `0x${string}`),
         }).then(({ decimals, symbol, formatted, value }) => [
-          key,
+          token.symbol,
           {
-            ...map,
-            decimals,
+            ...token,
+            dedecimal: decimals,
             symbol,
             banlanceFormatted: formatted,
             banlanceValue: value,
@@ -116,7 +125,12 @@ export default function Home() {
       const _fetchedCurrencyMap = Object.fromEntries(res);
       setFetchedCurrencyMap(_fetchedCurrencyMap);
       setSwapPair([
-        { ..._fetchedCurrencyMap.ETH, value: 0n, formatted: "" },
+        {
+          ..._fetchedCurrencyMap[getDefaultTokenSymbol(connectChain!.id)],
+          address: undefined,
+          value: 0n,
+          formatted: "",
+        },
         { value: 0n, formatted: "" },
       ]);
     });
@@ -124,19 +138,30 @@ export default function Home() {
 
   // 仅客户端渲染时需要
   useEffect(() => {
-    client_getStaticProps().then((res) => setPriceInfo(res.props._priceInfo));
-  }, []);
-  // useEffect(() => {
-  //   setPriceInfo((p) => p ?? _priceInfo);
-  // }, [_priceInfo]);
+    if (connectChain?.id) {
+      client_getStaticProps(connectChain.id).then((res) =>
+        setPriceInfo(res.props._priceInfo)
+      );
+    }
+  }, [connectChain]);
 
   useEffect(() => {
     if (isConnected && isCorrectChain) {
       fetchAllBalance();
+      setSwapPair([
+        {
+          ...tokenList.find(
+            (token) => token.symbol === getDefaultTokenSymbol(connectChain!.id)
+          ),
+          value: 0n,
+          formatted: "",
+        },
+        { value: 0n, formatted: "" },
+      ]);
     } else {
       setFetchedCurrencyMap(undefined);
       setSwapPair([
-        { ...currencyMap.ETH, value: 0n, formatted: "" },
+        { value: 0n, formatted: "" },
         { value: 0n, formatted: "" },
       ]);
     }
@@ -197,7 +222,7 @@ export default function Home() {
   };
 
   const onInputAmountChange = (v: string) => {
-    const value = parseUnits(v, swapPair[0].decimals!);
+    const value = parseUnits(v, swapPair[0].decimal!);
     setSwapPair((sp) => [
       {
         ...sp[0],
@@ -220,7 +245,7 @@ export default function Home() {
 
   const { run: debounceInputAmountChange } = useDebounceFn(
     (value: string) => {
-      const bnValue = parseUnits(value, swapPair[0].decimals!);
+      const bnValue = parseUnits(value, swapPair[0].decimal!);
       if ([SwapTypeEnum.unWrap, SwapTypeEnum.wrap].includes(swapType!)) {
         // ETH/WETH
         setSwapPair((sp) => [
@@ -228,19 +253,19 @@ export default function Home() {
           {
             ...sp[1],
             value: bnValue,
-            formatted: formatUnits(bnValue, sp[1].decimals!),
+            formatted: formatUnits(bnValue, sp[1].decimal!),
           },
         ]);
       } else {
         searchPath(
           {
-            address: swapPair[0].address ?? WETH_ADDR!,
+            address: swapPair[0].address ?? getWETHAddr(connectChain!.id),
             symbol: swapPair[0].address ? swapPair[0].symbol! : WETH_SYMBOL,
             chainId: connectChain!.id,
             decimal: 18,
           },
           {
-            address: swapPair[1].address ?? WETH_ADDR!,
+            address: swapPair[1].address ?? getWETHAddr(connectChain!.id),
             symbol: swapPair[1].address ? swapPair[1].symbol! : WETH_SYMBOL,
             chainId: connectChain!.id,
             decimal: 18,
@@ -252,7 +277,7 @@ export default function Home() {
           if (res.amount) {
             const outputValue = formatUnits(
               BigInt(res.amount),
-              swapPair[1].decimals!
+              swapPair[1].decimal!
             );
             setSwapPair((sp) => [
               sp[0],
@@ -328,13 +353,14 @@ export default function Home() {
     }
     return (
       <Button {...btnProps} onClick={() => setIsConfirmModalOpen(true)}>
-        {SwapInfoMap[swapType!].label}
+        {getSwapInfoMap(connectChain!.id)[swapType!].label}
       </Button>
     );
   }, [
     isConnected,
     isCorrectChain,
     isPrepared,
+    connectChain,
     chains,
     swapPair,
     swapType,
@@ -437,16 +463,6 @@ export default function Home() {
                 priceInfo={priceInfo!}
                 disabled={!isPrepared}
                 onSelect={(e) => onCurrencySelect(e, 1)}
-                // onChange={(v) =>
-                //   setSwapPair((sp) => [
-                //     sp[0],
-                //     {
-                //       ...sp[1],
-                //       value: parseUnits(v, sp[1].decimals!),
-                //       formatted: v,
-                //     },
-                //   ])
-                // }
               />
               {swapPair[0].value && swapPair[1].value ? (
                 <PreviewPanel

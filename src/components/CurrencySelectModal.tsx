@@ -69,7 +69,7 @@ export default function CurrencySelectModal(props: CurrencySelectModalProps) {
           >
             <div className="icon">
               <Image
-                src={currency.logoSrc}
+                src={currency.icon}
                 alt="Currency Logo"
                 height="36"
                 width="36"

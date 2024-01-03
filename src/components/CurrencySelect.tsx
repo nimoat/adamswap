@@ -25,7 +25,7 @@ const CurrencySelect = (props: CurrcySelectProps) => {
           onClick={onClick}
         >
           <Image
-            src={currency.logoSrc!}
+            src={currency.icon!}
             alt="Currency Logo"
             height="24"
             width="24"

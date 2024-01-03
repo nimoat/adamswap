@@ -74,7 +74,7 @@ const PreviewPanel = (props: PreviewPanelProps) => {
                       ? swapPair[1].formatted
                       : getMinReceived(
                           swapPair[1].value,
-                          swapPair[1].decimals!,
+                          swapPair[1].decimal!,
                           slippage ?? 0,
                           true
                         ).formated

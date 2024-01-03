@@ -28,7 +28,7 @@ export type PriceInfo = {
  */
 export const getMinReceived = (
   originOutputValue: bigint,
-  decimals: number,
+  decimal: number,
   slippage = 0,
   isMyFee = false
 ) => {
@@ -38,7 +38,7 @@ export const getMinReceived = (
   }
   return {
     value,
-    formated: getNFloatNumber(formatUnits(value, decimals), 5),
+    formated: getNFloatNumber(formatUnits(value, decimal), 5),
   };
 };
 

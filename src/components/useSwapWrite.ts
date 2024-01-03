@@ -1,6 +1,6 @@
-import { useAccount, useContractWrite } from "wagmi";
+import { useAccount, useContractWrite, useNetwork } from "wagmi";
 import { encodeFunctionData } from "viem";
-import { SwapInfoMap, SwapTypeEnum } from "./ConfirmModal";
+import { getSwapInfoMap, SwapTypeEnum } from "./ConfirmModal";
 import { useContext } from "react";
 import { SwapType } from "./context";
 
@@ -11,12 +11,15 @@ type PropsType = {
 
 export function useSwapWrite({ onError }: PropsType) {
   const { address: accountAddress } = useAccount();
+  const { chain: connectChain } = useNetwork();
   const swapType = useContext(SwapType) as SwapTypeEnum;
 
+  const swapInfoMap = getSwapInfoMap(connectChain!.id);
+
   const { data, write } = useContractWrite({
-    abi: SwapInfoMap[swapType].abi,
-    functionName: SwapInfoMap[swapType].functionName[0],
-    address: SwapInfoMap[swapType].contractAddress,
+    abi: swapInfoMap[swapType].abi,
+    functionName: swapInfoMap[swapType].functionName[0],
+    address: swapInfoMap[swapType].contractAddress,
     // gas: gasLimit,
     // gasPrice: feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,13 +31,13 @@ export function useSwapWrite({ onError }: PropsType) {
     if ([SwapTypeEnum.erc204Eth, SwapTypeEnum.eth4Erc20].includes(swapType)) {
       const callData = [
         encodeFunctionData({
-          abi: SwapInfoMap[swapType].abi,
-          functionName: SwapInfoMap[swapType].functionName[1],
+          abi: swapInfoMap[swapType].abi,
+          functionName: swapInfoMap[swapType].functionName[1],
           args: params.args,
         }),
         encodeFunctionData({
-          abi: SwapInfoMap[swapType].abi,
-          functionName: SwapInfoMap[swapType].functionName[2],
+          abi: swapInfoMap[swapType].abi,
+          functionName: swapInfoMap[swapType].functionName[2],
           args:
             swapType === SwapTypeEnum.erc204Eth
               ? [0, accountAddress]

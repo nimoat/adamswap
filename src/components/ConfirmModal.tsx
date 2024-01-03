@@ -11,13 +11,15 @@ import {
   useWaitForTransaction,
   useContractRead,
   useAccount,
+  useNetwork,
 } from "wagmi";
 import Steps from "./Steps";
 import { getTokenChainPath } from "iziswap-sdk/lib/base";
 import { SwapPair, SwapType } from "./context";
 import {
   swapContractAddress,
-  ERC20Addrs,
+  getWETHAddr,
+  ZERO_ADDR,
   swapAbi,
   gasLimit,
   weth9Abi,
@@ -58,38 +60,40 @@ type SwapInfo = {
   contractAddress: `0x${string}`;
 };
 
-export const SwapInfoMap: Record<SwapTypeEnum, SwapInfo> = {
+export const getSwapInfoMap = (
+  chainId: number
+): Record<SwapTypeEnum, SwapInfo> => ({
   [SwapTypeEnum.erc204Erc20]: {
     label: "Swap",
     functionName: ["swapAmount"],
     abi: swapAbi,
-    contractAddress: swapContractAddress,
+    contractAddress: swapContractAddress[chainId],
   },
   [SwapTypeEnum.erc204Eth]: {
     label: "Swap",
     functionName: ["multicall", "swapAmount", "unwrapWETH9"],
     abi: swapAbi,
-    contractAddress: swapContractAddress,
+    contractAddress: swapContractAddress[chainId],
   },
   [SwapTypeEnum.eth4Erc20]: {
     label: "Swap",
     functionName: ["multicall", "swapAmount", "refundETH"],
     abi: swapAbi,
-    contractAddress: swapContractAddress,
+    contractAddress: swapContractAddress[chainId],
   },
   [SwapTypeEnum.wrap]: {
     label: "Wrap",
     functionName: ["deposit"],
     abi: weth9Abi,
-    contractAddress: ERC20Addrs.WETH_ADDR as `0x${string}`,
+    contractAddress: getWETHAddr(chainId),
   },
   [SwapTypeEnum.unWrap]: {
     label: "Unwrap",
     functionName: ["withdraw"],
     abi: weth9Abi,
-    contractAddress: ERC20Addrs.WETH_ADDR as `0x${string}`,
+    contractAddress: getWETHAddr(chainId),
   },
-};
+});
 
 type ConfirmModalPropsType = {
   isModalOpen: boolean;
@@ -122,6 +126,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
   const [isSwapping, setIsSwapping] = useState(false);
 
   const { address: accountAddress } = useAccount();
+  const { chain: connectChain } = useNetwork();
 
   const swapPairPlus = useMemo(() => {
     return swapPair.map((item, index) => ({
@@ -144,7 +149,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     abi: erc20ABI,
     functionName: "allowance",
     address: swapPair[0].address as `0x${string}`,
-    args: [accountAddress!, swapContractAddress],
+    args: [accountAddress!, swapContractAddress[connectChain!.id]],
   });
 
   // approve上链前
@@ -211,7 +216,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     onSuccess: async (data) => {
       setIsSwapping(false);
       notify.success({
-        message: `${SwapInfoMap[swapType].label} success!`,
+        message: `${getSwapInfoMap(connectChain!.id)[swapType].label} success!`,
         description: (
           <Button
             type="link"
@@ -229,7 +234,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
       notify.error({
-        message: `${SwapInfoMap[swapType].label} failed!`,
+        message: `${getSwapInfoMap(connectChain!.id)[swapType].label} failed!`,
         description: error.shortMessage,
         placement: "bottomRight",
       });
@@ -252,13 +257,11 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                 searchPathInfo!.path.tokenChain,
                 searchPathInfo!.path.feeContractNumber
               ), //pathWithFee
-              swapType === SwapTypeEnum.erc204Eth
-                ? ERC20Addrs.ZERO_ADDR
-                : accountAddress,
+              swapType === SwapTypeEnum.erc204Eth ? ZERO_ADDR : accountAddress,
               swapPair[0]?.value,
               getMinReceived(
                 swapPair[1].value,
-                swapPair[1].decimals!,
+                swapPair[1].decimal!,
                 slippage ?? 0,
                 false
               ).value,
@@ -287,7 +290,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
       ![SwapTypeEnum.wrap, SwapTypeEnum.unWrap].includes(swapType)
     ) {
       approveWrites?.({
-        args: [swapContractAddress, swapPair[0].value],
+        args: [swapContractAddress[connectChain!.id], swapPair[0].value],
       });
       setIsApproving(true);
       setNeedApprove(true);
@@ -300,6 +303,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     allowanceData,
     swapPair,
     swapType,
+    connectChain,
     approveWrites,
     writeSwap,
     setConfirmModalOpen,
@@ -341,9 +345,9 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                   {item.formatted} {item.symbol}
                 </div>
                 <div className="symbol">
-                  {item.logoSrc && (
+                  {item.icon && (
                     <Image
-                      src={item.logoSrc}
+                      src={item.icon}
                       alt="Currency Logo"
                       height="32"
                       width="32"
@@ -388,7 +392,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                     ? swapPair[1].formatted
                     : getMinReceived(
                         swapPair[1].value,
-                        swapPair[1].decimals!,
+                        swapPair[1].decimal!,
                         slippage ?? 0,
                         true
                       ).formated
@@ -433,7 +437,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         {isApproving && (
           <>
             <Image
-              src={swapPair[0].logoSrc!}
+              src={swapPair[0].icon!}
               alt="Currency Logo"
               height="36"
               width="36"
@@ -449,7 +453,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
               <div className="pair-item">
                 <div className="symbol">
                   <Image
-                    src={swapPair[0].logoSrc!}
+                    src={swapPair[0].icon!}
                     alt="Currency Logo"
                     height="16"
                     width="16"
@@ -465,7 +469,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
               <div className="pair-item">
                 <div className="symbol">
                   <Image
-                    src={swapPair[1].logoSrc!}
+                    src={swapPair[1].icon!}
                     alt="Currency Logo"
                     height="16"
                     width="16"
