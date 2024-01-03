@@ -75,7 +75,7 @@ export default function Home() {
     [connectChain, chains]
   );
 
-  console.log("BUILD_ENV:", process.env.BUILD_ENV);
+  console.log("NEXT_PUBLIC_NEXT_PUBLIC:", process.env.NEXT_PUBLIC_BUILD_ENV);
 
   const swapType = useMemo(() => {
     if (swapPair.every((sp) => !!sp.symbol)) {
