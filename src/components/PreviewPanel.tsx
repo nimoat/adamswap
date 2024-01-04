@@ -16,6 +16,7 @@ import { gasLimit } from "./constant";
 
 import homeStyles from "@/styles/Home.module.less";
 import { SwapTypeEnum } from "./ConfirmModal";
+import { useNetwork } from "wagmi";
 
 type PreviewPanelProps = {
   searchPathInfo: PathQueryResult;
@@ -27,11 +28,17 @@ type PreviewPanelProps = {
 const PreviewPanel = (props: PreviewPanelProps) => {
   const { searchPathInfo, feeData, priceInfo, slippage } = props;
 
+  const { chain: connectChain } = useNetwork();
   const swapPair = useContext(SwapPair);
   const swapType = useContext(SwapType);
 
   const networkFee = feeData?.gasPrice
-    ? getNetworkFee(feeData.gasPrice, gasLimit, priceInfo)
+    ? getNetworkFee(
+        feeData.gasPrice,
+        gasLimit,
+        priceInfo,
+        connectChain!.nativeCurrency.symbol
+      )
     : "";
 
   return (

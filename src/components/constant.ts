@@ -80,9 +80,9 @@ const searchPathParams_release: Record<number, MySearchPathQueryParams> = {
 
 // -------------------
 
-// export const approveGasLimit = 30_000n; // test
+export const approveGasLimit = 50_000n;
 
-export const gasLimit = 1_800_000n; // test @PRD
+export const gasLimit = 255_000n;
 
 export const defaultSlippage = 3; // @PRD
 

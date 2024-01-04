@@ -23,6 +23,7 @@ import {
   swapAbi,
   gasLimit,
   weth9Abi,
+  approveGasLimit,
 } from "./constant";
 import {
   PriceInfo,
@@ -141,7 +142,12 @@ function ConfirmModal(props: ConfirmModalPropsType) {
   }, [swapPair, priceInfo]);
 
   const networkFee = feeData?.gasPrice
-    ? getNetworkFee(feeData.gasPrice, gasLimit, priceInfo)
+    ? getNetworkFee(
+        feeData.gasPrice,
+        gasLimit,
+        priceInfo,
+        connectChain!.nativeCurrency.symbol
+      )
     : "";
 
   // 获取erc20 allowance
@@ -157,8 +163,8 @@ function ConfirmModal(props: ConfirmModalPropsType) {
     abi: erc20ABI,
     functionName: "approve",
     address: swapPair[0].address as `0x${string}`,
-    // gas: approveGasLimit,
-    // gasPrice: parseGwei("0.1"), //  feeData?.gasPrice ?? undefined, // @TODO: Legacy Transactions.
+    gas: approveGasLimit,
+    // gasPrice: feeData?.gasPrice ?? undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: Error | any) => {
       notify.error({

@@ -45,11 +45,12 @@ export const getMinReceived = (
 export const getNetworkFee = (
   gasPrice: bigint,
   gasLimit: bigint,
-  priceInfo: PriceInfo
+  priceInfo: PriceInfo,
+  symbol: string
 ) =>
   "$" +
   getNFloatNumber(
-    Number(formatEther(gasPrice * gasLimit)) * priceInfo.data.ETH
+    Number(formatEther(gasPrice * gasLimit)) * priceInfo.data[symbol]
   );
 
 /** 使用时需要除以1000_000n (6个0) */
