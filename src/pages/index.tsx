@@ -27,14 +27,12 @@ import UserSetting from "@/components/UserSetting";
 import {
   defaultSlippage,
   getDefaultTokenSymbol,
+  getDefaultWrapedTokenSymbol,
   getTokenList,
   getWETHAddr,
 } from "@/components/constant";
 
 import styles from "@/styles/Home.module.less";
-
-const WETH_SYMBOL = "WETH";
-const ETH_SYMBOL = "ETH";
 
 export const client_getStaticProps = async (chainId: number) => {
   const tokenList = getTokenList(chainId);
@@ -77,22 +75,26 @@ export default function Home() {
   );
 
   const swapType = useMemo(() => {
-    if (swapPair.every((sp) => !!sp.symbol)) {
-      if (swapPair[0].symbol === ETH_SYMBOL) {
-        if (swapPair[1].symbol === WETH_SYMBOL) {
+    if (swapPair.every((sp) => !!sp.symbol) && connectChain?.id) {
+      if (swapPair[0].symbol === getDefaultTokenSymbol(connectChain!.id)) {
+        if (
+          swapPair[1].symbol === getDefaultWrapedTokenSymbol(connectChain!.id)
+        ) {
           return SwapTypeEnum.wrap;
         }
         return SwapTypeEnum.eth4Erc20;
       }
-      if (swapPair[1].symbol === ETH_SYMBOL) {
-        if (swapPair[0].symbol === WETH_SYMBOL) {
+      if (swapPair[1].symbol === getDefaultTokenSymbol(connectChain!.id)) {
+        if (
+          swapPair[0].symbol === getDefaultWrapedTokenSymbol(connectChain!.id)
+        ) {
           return SwapTypeEnum.unWrap;
         }
         return SwapTypeEnum.erc204Eth;
       }
       return SwapTypeEnum.erc204Erc20;
     }
-  }, [swapPair]);
+  }, [swapPair, connectChain]);
 
   const tokenList = useMemo(() => {
     if (connectChain?.id) {
@@ -114,7 +116,11 @@ export default function Home() {
           token.symbol,
           {
             ...token,
-            dedecimal: decimals,
+            address:
+              token.symbol === getDefaultTokenSymbol(connectChain!.id)
+                ? undefined
+                : token.address,
+            decimal: decimals,
             symbol,
             banlanceFormatted: formatted,
             banlanceValue: value,
@@ -127,7 +133,6 @@ export default function Home() {
       setSwapPair([
         {
           ..._fetchedCurrencyMap[getDefaultTokenSymbol(connectChain!.id)],
-          address: undefined,
           value: 0n,
           formatted: "",
         },
@@ -148,16 +153,6 @@ export default function Home() {
   useEffect(() => {
     if (isConnected && isCorrectChain) {
       fetchAllBalance();
-      setSwapPair([
-        {
-          ...tokenList.find(
-            (token) => token.symbol === getDefaultTokenSymbol(connectChain!.id)
-          ),
-          value: 0n,
-          formatted: "",
-        },
-        { value: 0n, formatted: "" },
-      ]);
     } else {
       setFetchedCurrencyMap(undefined);
       setSwapPair([
@@ -260,13 +255,17 @@ export default function Home() {
         searchPath(
           {
             address: swapPair[0].address ?? getWETHAddr(connectChain!.id),
-            symbol: swapPair[0].address ? swapPair[0].symbol! : WETH_SYMBOL,
+            symbol: swapPair[0].address
+              ? swapPair[0].symbol!
+              : getDefaultWrapedTokenSymbol(connectChain!.id),
             chainId: connectChain!.id,
             decimal: 18,
           },
           {
             address: swapPair[1].address ?? getWETHAddr(connectChain!.id),
-            symbol: swapPair[1].address ? swapPair[1].symbol! : WETH_SYMBOL,
+            symbol: swapPair[1].address
+              ? swapPair[1].symbol!
+              : getDefaultWrapedTokenSymbol(connectChain!.id),
             chainId: connectChain!.id,
             decimal: 18,
           },

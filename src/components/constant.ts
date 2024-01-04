@@ -14,6 +14,10 @@ const defaultTokenSymbol_alpha: Record<number, string> = {
   534351: "ETH",
 };
 
+const defaultWrapedTokenSymbol_alpha: Record<number, string> = {
+  534351: "WETH",
+};
+
 const supportChains_alpha = [scrollSepolia];
 
 // -------------------
@@ -24,6 +28,8 @@ const WETH_ADDR_release: Record<number, `0x${string}`> = {};
 const swapContractAddress_release: Record<number, `0x${string}`> = {};
 
 const defaultTokenSymbol_release: Record<number, string> = {};
+
+const defaultWrapedTokenSymbol_release: Record<number, string> = {};
 
 const supportChains_release = [scrollSepolia];
 // -------------------
@@ -63,6 +69,11 @@ export const getDefaultTokenSymbol = (chainId: number): string =>
   process.env.NEXT_PUBLIC_BUILD_ENV === "release"
     ? defaultTokenSymbol_release[chainId]
     : defaultTokenSymbol_alpha[chainId];
+
+export const getDefaultWrapedTokenSymbol = (chainId: number): string =>
+  process.env.NEXT_PUBLIC_BUILD_ENV === "release"
+    ? defaultWrapedTokenSymbol_release[chainId]
+    : defaultWrapedTokenSymbol_alpha[chainId];
 
 export const supportChains =
   process.env.NEXT_PUBLIC_BUILD_ENV === "release"
