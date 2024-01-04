@@ -109,7 +109,7 @@ export default function Home() {
           address: accountAddress as `0x${string}`,
           token:
             token.symbol === connectChain!.nativeCurrency.symbol
-              ? undefined
+              ? ("" as `0x${string}`)
               : (token.address as `0x${string}`),
         }).then(({ decimals, symbol, formatted, value }) => [
           token.symbol,
@@ -120,24 +120,28 @@ export default function Home() {
                 ? undefined
                 : token.address,
             decimal: decimals,
-            symbol,
+            symbol: token.symbol ?? symbol,
             banlanceFormatted: formatted,
             banlanceValue: value,
           },
         ])
       )
-    ).then((res) => {
-      const _fetchedCurrencyMap = Object.fromEntries(res);
-      setFetchedCurrencyMap(_fetchedCurrencyMap);
-      setSwapPair([
-        {
-          ..._fetchedCurrencyMap[connectChain!.nativeCurrency.symbol],
-          value: 0n,
-          formatted: "",
-        },
-        { value: 0n, formatted: "" },
-      ]);
-    });
+    )
+      .then((res) => {
+        const _fetchedCurrencyMap = Object.fromEntries(res);
+        setFetchedCurrencyMap(_fetchedCurrencyMap);
+        setSwapPair([
+          {
+            ..._fetchedCurrencyMap[connectChain!.nativeCurrency.symbol],
+            value: 0n,
+            formatted: "",
+          },
+          { value: 0n, formatted: "" },
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   // 仅客户端渲染时需要
@@ -272,7 +276,7 @@ export default function Home() {
           connectChain!
         ).then((res) => {
           setSearchPathInfo(res);
-          if (res.amount) {
+          if (res?.amount) {
             const outputValue = formatUnits(
               BigInt(res.amount),
               swapPair[1].decimal!

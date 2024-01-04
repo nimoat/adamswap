@@ -1828,6 +1828,76 @@
     }
   },
   {
+    "name": "Bella Token",
+    "symbol": "BEL",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/bel.png",
+    "chains": [
+      169
+    ],
+    "contracts": {
+      "169": {
+        "address": "0xB385E52903C802B3bDca7C4D0C78460A8988E1ce",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Minu the Manta",
+    "symbol": "MNU",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/mnu.png",
+    "chains": [
+      169
+    ],
+    "contracts": {
+      "169": {
+        "address": "0x0d613b80f9afb3cef99fe26702227d74b0178740",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "MANTE",
+    "symbol": "MANTE",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/mante.png",
+    "chains": [
+      169
+    ],
+    "contracts": {
+      "169": {
+        "address": "0xaa902c15676c076ec0e7cb7cc57201d2162e2eb6",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "KUMA",
+    "symbol": "KUMA",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/kuma.png",
+    "chains": [
+      169
+    ],
+    "contracts": {
+      "169": {
+        "address": "0xCA24Fdce9d4D9BD69c829689bAEa02E34d025f43",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "Mantizard Token",
+    "symbol": "MZARD",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/mzard.png",
+    "chains": [
+      169
+    ],
+    "contracts": {
+      "169": {
+        "address": "0x71763103f697E550200cF4a5C25850114F560CA7",
+        "decimal": 18
+      }
+    }
+  },
+  {
     "name": "Mantle Token",
     "symbol": "MNT",
     "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/mnt.png",
@@ -2062,6 +2132,20 @@
       "5000": {
         "address": "0x8fe7176f0bf63358ad9490fd24ac0bdb4dac33a8",
         "decimal": 6
+      }
+    }
+  },
+  {
+    "name": "Solv Strategy USD",
+    "symbol": "stUSD",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/stusd.png",
+    "chains": [
+      5000
+    ],
+    "contracts": {
+      "5000": {
+        "address": "0x7cbf716aa9a6114281188867572ac87586e4abf2",
+        "decimal": 18
       }
     }
   },
@@ -3168,6 +3252,20 @@
     }
   },
   {
+    "name": "FLON token",
+    "symbol": "FLON",
+    "chains": [
+      42766
+    ],
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/flon.png",
+    "contracts": {
+      "42766": {
+        "address": "0xA111328a3dc9650f07653944EE2e2a88c10C2ad8",
+        "decimal": 18
+      }
+    }
+  },
+  {
     "name": "USDLR by Stable",
     "symbol": "USDLR",
     "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/usdlr.png",
@@ -3359,6 +3457,20 @@
     "contracts": {
       "324": {
         "address": "0x47260090cE5e83454d5f05A0AbbB2C953835f777",
+        "decimal": 18
+      }
+    }
+  },
+  {
+    "name": "X SpaceFi token",
+    "symbol": "xSPACE",
+    "icon": "https://izumi-finance.oss-ap-southeast-1.aliyuncs.com/tokens/space.png",
+    "chains": [
+      324
+    ],
+    "contracts": {
+      "324": {
+        "address": "0x6aF43486Cb84bE0e3EDdCef93d3C43Ef0C5F63b1",
         "decimal": 18
       }
     }

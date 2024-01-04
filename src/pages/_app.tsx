@@ -4,7 +4,7 @@ import { WagmiConfig } from "wagmi";
 import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
 import { ConfigProvider } from "antd";
-import { supportChains } from "@/components/constant";
+import { chainImages, supportChains } from "@/components/constant";
 import theme from "../theme/themeConfig";
 import Footer from "@/components/Footer";
 import favicon from "@/assets/favicon.ico";
@@ -30,6 +30,7 @@ createWeb3Modal({
   wagmiConfig,
   projectId,
   chains,
+  chainImages,
   defaultChain: chains[0],
 });
 

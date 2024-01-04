@@ -1,33 +1,27 @@
 import Web3 from "web3";
 import { TokenInfoFormatted } from "iziswap-sdk/lib/base/types";
-// import { BigNumber } from "bignumber.js";
 import { getMulticallContracts } from "iziswap-sdk/lib/base";
 import {
-  // PoolPair,
   SearchPathQueryParams,
   SwapDirection,
 } from "iziswap-sdk/lib/search/types";
 import { searchPathQuery } from "iziswap-sdk/lib/search/func";
 import type { Chain } from "viem";
+import { getSearchPathParams } from "./constant";
 
-const quoterAddress = "0xF6FFe4f3FdC8BBb7F70FFD48e61f17D1e343dDfD";
-const multicallAddress = "0xcd19063466CE94a37615AbE9cBE6baA9C5759b1b"; // scroll testnet
-const liquidityManagerAddress = "0x67A1f4A939b477A6b7c5BF94D97E45dE87E608eF"; // scroll testnet
-
-const initialSearchParams: Omit<
+const initialSearchParams: Pick<
   SearchPathQueryParams,
-  "chainId" | "web3" | "multicall" | "tokenIn" | "tokenOut" | "amount"
+  "poolBlackList" | "support001Pools" | "direction"
 > = {
   // chainId: Number(ChainId.ScrollTestL2),
   // web3: web3,
   // multicall: multicallContract,
   // tokenIn: BNB, // 参数替换
   // tokenOut: USDT, // 参数替换
-  liquidityManagerAddress,
-  quoterAddress,
+  // liquidityManagerAddress,
+  // quoterAddress,
   poolBlackList: [],
-  midTokenList: [],
-  supportFeeContractNumbers: [2000],
+  // supportFeeContractNumbers: [10000, 3000],
   support001Pools: [],
   direction: SwapDirection.ExactIn,
   // amount: "1000000", // 参数替换
@@ -55,6 +49,8 @@ export const searchPath = async (
 ) => {
   const rpc = chain.rpcUrls.default.http[0];
   const web3 = new Web3(new Web3.providers.HttpProvider(rpc));
+  const { multicallAddress, ...params } = getSearchPathParams(chain.id);
+
   const multicallContract = getMulticallContracts(
     multicallAddress,
     web3 as Web3
@@ -62,6 +58,7 @@ export const searchPath = async (
 
   const { pathQueryResult } = await searchPathQuery({
     ...initialSearchParams,
+    ...params,
     chainId: chain.id,
     web3,
     multicall: multicallContract,
