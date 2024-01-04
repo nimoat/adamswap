@@ -1,21 +1,18 @@
 import { scrollSepolia } from "wagmi/chains";
 import { Currency } from "./currencyMap";
+import { defineChain } from "viem";
 
 // 测试网-------------
 const WETH_ADDR_alpha: Record<number, `0x${string}`> = {
   534351: "0xfa6a407c4c49ea1d46569c1a4bcf71c3437be54c",
 };
 
-const swapContractAddress_alpha: Record<number, `0x${string}`> = {
-  534351: "0xfdEA8c139F282b14E09D27528a316c7e8AA27878", // Scroll Sepolia Testnet (chainId: 534351 )
-};
-
-const defaultTokenSymbol_alpha: Record<number, string> = {
-  534351: "ETH",
-};
-
 const defaultWrapedTokenSymbol_alpha: Record<number, string> = {
   534351: "WETH",
+};
+
+const swapContractAddress_alpha: Record<number, `0x${string}`> = {
+  534351: "0xfdEA8c139F282b14E09D27528a316c7e8AA27878", // Scroll Sepolia Testnet (chainId: 534351 )
 };
 
 const supportChains_alpha = [scrollSepolia];
@@ -23,22 +20,57 @@ const supportChains_alpha = [scrollSepolia];
 // -------------------
 
 // 主网----------------
-const WETH_ADDR_release: Record<number, `0x${string}`> = {};
+const WETH_ADDR_release: Record<number, `0x${string}`> = {
+  42766: "0xD33Db7EC50A98164cC865dfaa64666906d79319C",
+};
 
-const swapContractAddress_release: Record<number, `0x${string}`> = {};
+const defaultWrapedTokenSymbol_release: Record<number, string> = {
+  42766: "WUSDC",
+};
 
-const defaultTokenSymbol_release: Record<number, string> = {};
+const swapContractAddress_release: Record<number, `0x${string}`> = {
+  42766: "0x90a6a815ADa96F682E6D91799F4682602021095c",
+};
 
-const defaultWrapedTokenSymbol_release: Record<number, string> = {};
-
-const supportChains_release = [scrollSepolia];
+const supportChains_release = [
+  defineChain({
+    id: 42766,
+    name: "ZKFair Mainnet",
+    network: "ZKFair",
+    nativeCurrency: { name: "USD Coin", symbol: "USDC", decimals: 18 },
+    rpcUrls: {
+      default: {
+        http: ["https://rpc.zkfair.io"],
+      },
+      public: {
+        http: ["https://rpc.zkfair.io"],
+      },
+    },
+    blockExplorers: {
+      etherscan: {
+        name: "ZKFair Explorer",
+        url: "https://scan.zkfair.io/",
+      },
+      default: {
+        name: "ZKFair Explorer",
+        url: "https://scan.zkfair.io/",
+      },
+    },
+    // contracts: {
+    //   multicall3: {
+    //     address: "0xca11bde05977b3631167028862be2a173976ca11",
+    //     blockCreated: 4286263,
+    //   },
+    // },
+  }),
+];
 // -------------------
 
 // export const approveGasLimit = 30_000n; // test
 
 export const gasLimit = 1_800_000n; // test @PRD
 
-export const defaultSlippage = 5; // @PRD
+export const defaultSlippage = 3; // @PRD
 
 // --------------------- 下面的一般不需要适配改动
 
@@ -64,11 +96,6 @@ export const getTokenList = (chainId: number): Currency[] => {
     .filter((token) => token.chains?.includes(chainId))
     .map((token) => ({ ...token, ...token.contracts[`${chainId}`] }));
 };
-
-export const getDefaultTokenSymbol = (chainId: number): string =>
-  process.env.NEXT_PUBLIC_BUILD_ENV === "release"
-    ? defaultTokenSymbol_release[chainId]
-    : defaultTokenSymbol_alpha[chainId];
 
 export const getDefaultWrapedTokenSymbol = (chainId: number): string =>
   process.env.NEXT_PUBLIC_BUILD_ENV === "release"

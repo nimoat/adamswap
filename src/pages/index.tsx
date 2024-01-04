@@ -26,7 +26,6 @@ import ConfirmModal, {
 import UserSetting from "@/components/UserSetting";
 import {
   defaultSlippage,
-  getDefaultTokenSymbol,
   getDefaultWrapedTokenSymbol,
   getTokenList,
   getWETHAddr,
@@ -76,7 +75,7 @@ export default function Home() {
 
   const swapType = useMemo(() => {
     if (swapPair.every((sp) => !!sp.symbol) && connectChain?.id) {
-      if (swapPair[0].symbol === getDefaultTokenSymbol(connectChain!.id)) {
+      if (swapPair[0].symbol === connectChain.nativeCurrency.symbol) {
         if (
           swapPair[1].symbol === getDefaultWrapedTokenSymbol(connectChain!.id)
         ) {
@@ -84,7 +83,7 @@ export default function Home() {
         }
         return SwapTypeEnum.eth4Erc20;
       }
-      if (swapPair[1].symbol === getDefaultTokenSymbol(connectChain!.id)) {
+      if (swapPair[1].symbol === connectChain.nativeCurrency.symbol) {
         if (
           swapPair[0].symbol === getDefaultWrapedTokenSymbol(connectChain!.id)
         ) {
@@ -109,7 +108,7 @@ export default function Home() {
         fetchBalance({
           address: accountAddress as `0x${string}`,
           token:
-            token.symbol === getDefaultTokenSymbol(connectChain!.id)
+            token.symbol === connectChain!.nativeCurrency.symbol
               ? undefined
               : (token.address as `0x${string}`),
         }).then(({ decimals, symbol, formatted, value }) => [
@@ -117,7 +116,7 @@ export default function Home() {
           {
             ...token,
             address:
-              token.symbol === getDefaultTokenSymbol(connectChain!.id)
+              token.symbol === connectChain!.nativeCurrency.symbol
                 ? undefined
                 : token.address,
             decimal: decimals,
@@ -132,7 +131,7 @@ export default function Home() {
       setFetchedCurrencyMap(_fetchedCurrencyMap);
       setSwapPair([
         {
-          ..._fetchedCurrencyMap[getDefaultTokenSymbol(connectChain!.id)],
+          ..._fetchedCurrencyMap[connectChain!.nativeCurrency.symbol],
           value: 0n,
           formatted: "",
         },
