@@ -57,3 +57,21 @@ export const getNetworkFee = (
 export const getSlippageBigint = (v: number) => {
   return BigInt((100 - v) * 10000);
 };
+
+/** Promise重试函数 */
+export const retry: <T>(fn: () => Promise<T>, times: number) => Promise<T> = (
+  fn,
+  times
+) => {
+  return new Promise((res, rej) => {
+    const attempt = () => {
+      console.log(`${times} retry protrecting function.`);
+      fn()
+        .then(res)
+        .catch((error) => {
+          times-- > 0 ? attempt() : rej(error);
+        });
+    };
+    attempt();
+  });
+};

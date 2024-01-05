@@ -70,6 +70,12 @@ const searchPathParams_release: Record<number, MySearchPathQueryParams> = {
     midTokenList: [
       {
         chainId: zkFair.id,
+        symbol: "WUSDC",
+        address: "0xD33Db7EC50A98164cC865dfaa64666906d79319C",
+        decimal: 18,
+      },
+      {
+        chainId: zkFair.id,
         symbol: "ZKF",
         address: "0x1cd3e2a23c45a690a18ed93fd1412543f464158f",
         decimal: 18,

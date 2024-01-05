@@ -17,7 +17,7 @@ import PreviewPanel from "@/components/PreviewPanel";
 import { useDebounceFn } from "ahooks";
 import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import { searchPath } from "@/components/onchainUtils";
-import { PriceInfo, getNFloatNumber } from "@/components/utils";
+import { PriceInfo, getNFloatNumber, retry } from "@/components/utils";
 import { SwapPair, SwapType } from "@/components/context";
 import ConfirmModal, {
   getSwapInfoMap,
@@ -108,31 +108,40 @@ export default function Home() {
   const fetchAllBalance = () => {
     Promise.all(
       tokenList.map((token) =>
-        fetchBalance({
-          address: accountAddress as `0x${string}`,
-          token:
-            token.symbol === connectChain!.nativeCurrency.symbol
-              ? ("" as `0x${string}`)
-              : (token.address as `0x${string}`),
-        }).then(({ decimals, symbol, formatted, value }) => ({
-          ...token,
-          address:
-            token.symbol === connectChain!.nativeCurrency.symbol
-              ? undefined
-              : token.address,
-          decimal: decimals,
-          symbol: token.symbol ?? symbol,
-          banlanceFormatted: formatted,
-          banlanceValue: value,
-        }))
+        retry(
+          () =>
+            fetchBalance({
+              address: accountAddress as `0x${string}`,
+              token:
+                token.symbol === connectChain!.nativeCurrency.symbol
+                  ? ("" as `0x${string}`)
+                  : (token.address as `0x${string}`),
+            }),
+          2
+        )
+          .then(({ decimals, symbol, formatted, value }) => ({
+            ...token,
+            address:
+              token.symbol === connectChain!.nativeCurrency.symbol
+                ? undefined
+                : token.address,
+            decimal: decimals,
+            symbol: token.symbol ?? symbol,
+            banlanceFormatted: formatted,
+            banlanceValue: value,
+          }))
+          .catch((error) => {
+            console.log(`fetch ${token.symbol} balance error.`, error);
+            return { ...token };
+          })
       )
-    )
-      .then((res) => {
-        setFetchedCurrencies(res);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    ).then((res) => {
+      setFetchedCurrencies(res);
+      setSwapPair(([sp1, sp2]) => [
+        { ...sp1, ...res.find((toke) => toke.symbol === sp1.symbol) },
+        { ...sp2, ...res.find((toke) => toke.symbol === sp2.symbol) },
+      ]);
+    });
   };
 
   const fetchedCurrencyMap = useMemo(
@@ -147,7 +156,7 @@ export default function Home() {
   useEffect(() => {
     setSwapPair([
       {
-        ...fetchedCurrencies.find(
+        ...tokenList.find(
           (token) => token.symbol === connectChain?.nativeCurrency?.symbol
         ),
         value: 0n,
@@ -155,7 +164,7 @@ export default function Home() {
       },
       { value: 0n, formatted: "" },
     ]);
-  }, [fetchedCurrencies, connectChain]);
+  }, [tokenList, connectChain]);
 
   // 仅客户端渲染时需要
   useEffect(() => {
@@ -265,42 +274,50 @@ export default function Home() {
           },
         ]);
       } else {
-        searchPath(
-          {
-            address: swapPair[0].address ?? getWETHAddr(connectChain!.id),
-            symbol: swapPair[0].address
-              ? swapPair[0].symbol!
-              : getDefaultWrapedTokenSymbol(connectChain!.id),
-            chainId: connectChain!.id,
-            decimal: 18,
-          },
-          {
-            address: swapPair[1].address ?? getWETHAddr(connectChain!.id),
-            symbol: swapPair[1].address
-              ? swapPair[1].symbol!
-              : getDefaultWrapedTokenSymbol(connectChain!.id),
-            chainId: connectChain!.id,
-            decimal: 18,
-          },
-          bnValue.toString(),
-          connectChain!
-        ).then((res) => {
-          setSearchPathInfo(res);
-          if (res?.amount) {
-            const outputValue = formatUnits(
-              BigInt(res.amount),
-              swapPair[1].decimal!
-            );
-            setSwapPair((sp) => [
-              sp[0],
+        retry(
+          () =>
+            searchPath(
               {
-                ...sp[1],
-                value: BigInt(res.amount),
-                formatted: getNFloatNumber(outputValue, 5),
+                address: swapPair[0].address ?? getWETHAddr(connectChain!.id),
+                symbol: swapPair[0].address
+                  ? swapPair[0].symbol!
+                  : getDefaultWrapedTokenSymbol(connectChain!.id),
+                chainId: connectChain!.id,
+                decimal: 18,
               },
-            ]);
-          }
-        });
+              {
+                address: swapPair[1].address ?? getWETHAddr(connectChain!.id),
+                symbol: swapPair[1].address
+                  ? swapPair[1].symbol!
+                  : getDefaultWrapedTokenSymbol(connectChain!.id),
+                chainId: connectChain!.id,
+                decimal: 18,
+              },
+              bnValue.toString(),
+              connectChain!
+            ),
+          2
+        )
+          .then((res) => {
+            setSearchPathInfo(res);
+            if (res?.amount) {
+              const outputValue = formatUnits(
+                BigInt(res.amount),
+                swapPair[1].decimal!
+              );
+              setSwapPair((sp) => [
+                sp[0],
+                {
+                  ...sp[1],
+                  value: BigInt(res.amount),
+                  formatted: getNFloatNumber(outputValue, 5),
+                },
+              ]);
+            }
+          })
+          .catch((e) => {
+            console.log("search path error.", e);
+          });
       }
 
       // 实时gas
