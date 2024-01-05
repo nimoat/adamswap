@@ -2,7 +2,7 @@ export type Currency = {
   name: string;
   icon: string;
   address?: string;
-  symbol?: string;
+  symbol: string;
   decimal?: number;
   banlanceValue?: bigint;
   banlanceFormatted?: string;

@@ -51,8 +51,7 @@ export default function Home() {
   const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
     useState(false);
   const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
-  const [fetchedCurrencyMap, setFetchedCurrencyMap] =
-    useState<Record<string, Currency>>();
+  const [fetchedCurrencies, setFetchedCurrencies] = useState<Currency[]>([]);
   const [swapPair, setSwapPair] = useState<[CurrencyV, CurrencyV]>([
     { value: 0n, formatted: "" },
     { value: 0n, formatted: "" },
@@ -102,6 +101,10 @@ export default function Home() {
     return [];
   }, [connectChain]);
 
+  useEffect(() => {
+    setFetchedCurrencies(tokenList);
+  }, [tokenList]);
+
   const fetchAllBalance = () => {
     Promise.all(
       tokenList.map((token) =>
@@ -111,38 +114,48 @@ export default function Home() {
             token.symbol === connectChain!.nativeCurrency.symbol
               ? ("" as `0x${string}`)
               : (token.address as `0x${string}`),
-        }).then(({ decimals, symbol, formatted, value }) => [
-          token.symbol,
-          {
-            ...token,
-            address:
-              token.symbol === connectChain!.nativeCurrency.symbol
-                ? undefined
-                : token.address,
-            decimal: decimals,
-            symbol: token.symbol ?? symbol,
-            banlanceFormatted: formatted,
-            banlanceValue: value,
-          },
-        ])
+        }).then(({ decimals, symbol, formatted, value }) => ({
+          ...token,
+          address:
+            token.symbol === connectChain!.nativeCurrency.symbol
+              ? undefined
+              : token.address,
+          decimal: decimals,
+          symbol: token.symbol ?? symbol,
+          banlanceFormatted: formatted,
+          banlanceValue: value,
+        }))
       )
     )
       .then((res) => {
-        const _fetchedCurrencyMap = Object.fromEntries(res);
-        setFetchedCurrencyMap(_fetchedCurrencyMap);
-        setSwapPair([
-          {
-            ..._fetchedCurrencyMap[connectChain!.nativeCurrency.symbol],
-            value: 0n,
-            formatted: "",
-          },
-          { value: 0n, formatted: "" },
-        ]);
+        setFetchedCurrencies(res);
       })
       .catch((error) => {
         console.error(error);
       });
   };
+
+  const fetchedCurrencyMap = useMemo(
+    () =>
+      fetchedCurrencies.reduce(
+        (pre, cur) => ({ ...pre, [cur.symbol]: cur }),
+        {}
+      ),
+    [fetchedCurrencies]
+  );
+
+  useEffect(() => {
+    setSwapPair([
+      {
+        ...fetchedCurrencies.find(
+          (token) => token.symbol === connectChain?.nativeCurrency?.symbol
+        ),
+        value: 0n,
+        formatted: "",
+      },
+      { value: 0n, formatted: "" },
+    ]);
+  }, [fetchedCurrencies, connectChain]);
 
   // 仅客户端渲染时需要
   useEffect(() => {
@@ -156,17 +169,14 @@ export default function Home() {
   useEffect(() => {
     if (isConnected && isCorrectChain) {
       fetchAllBalance();
-    } else {
-      setFetchedCurrencyMap(undefined);
-      setSwapPair([
-        { value: 0n, formatted: "" },
-        { value: 0n, formatted: "" },
-      ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountAddress, isConnected, connectChain, chains]);
+  }, [isCorrectChain, isConnected]);
 
-  const isPrepared = useMemo(() => !!fetchedCurrencyMap, [fetchedCurrencyMap]);
+  const isPrepared = useMemo(
+    () => isConnected && isCorrectChain,
+    [isConnected, isCorrectChain]
+  );
 
   useEffect(() => {
     if (isCorrectChain) {
