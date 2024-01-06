@@ -56,6 +56,7 @@ export default function Home() {
     { value: 0n, formatted: "" },
     { value: 0n, formatted: "" },
   ]);
+  const [searchPathLoading, setSearchPathLoading] = useState(false);
   const [searchPathInfo, setSearchPathInfo] = useState<PathQueryResult>();
   const [feeData, setFeeData] = useState<FetchFeeDataResult | undefined>();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -222,6 +223,7 @@ export default function Home() {
       swapPair[0].value
     ) {
       debounceInputAmountChange(swapPair[0].formatted);
+      setSearchPathLoading(true);
     }
   };
 
@@ -257,6 +259,7 @@ export default function Home() {
     ) {
       // value 保证输入格式正确
       debounceInputAmountChange(v);
+      setSearchPathLoading(true);
     }
   };
 
@@ -273,6 +276,7 @@ export default function Home() {
             formatted: formatUnits(bnValue, sp[1].decimal!),
           },
         ]);
+        setSearchPathLoading(false);
       } else {
         retry(
           () =>
@@ -317,7 +321,8 @@ export default function Home() {
           })
           .catch((e) => {
             console.log("search path error.", e);
-          });
+          })
+          .finally(() => setSearchPathLoading(false));
       }
 
       // 实时gas
@@ -381,7 +386,11 @@ export default function Home() {
       );
     }
     return (
-      <Button {...btnProps} onClick={() => setIsConfirmModalOpen(true)}>
+      <Button
+        {...btnProps}
+        disabled={searchPathLoading}
+        onClick={() => setIsConfirmModalOpen(true)}
+      >
         {getSwapInfoMap(connectChain!.id)[swapType!].label}
       </Button>
     );
@@ -393,6 +402,7 @@ export default function Home() {
     chains,
     swapPair,
     swapType,
+    searchPathLoading,
     openWeb3Modal,
   ]);
 
@@ -490,7 +500,7 @@ export default function Home() {
                 tip="Receive"
                 index={1}
                 priceInfo={priceInfo!}
-                disabled={!isPrepared}
+                disabled={!isPrepared || searchPathLoading}
                 onSelect={(e) => onCurrencySelect(e, 1)}
               />
               {swapPair[0].value && swapPair[1].value ? (
@@ -499,6 +509,7 @@ export default function Home() {
                   feeData={feeData}
                   priceInfo={priceInfo!}
                   slippage={slippage}
+                  disabled={searchPathLoading}
                 />
               ) : (
                 <></>

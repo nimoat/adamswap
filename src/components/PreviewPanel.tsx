@@ -23,10 +23,17 @@ type PreviewPanelProps = {
   feeData: FetchFeeDataResult | undefined;
   priceInfo: PriceInfo;
   slippage: number | null;
+  disabled: boolean;
 };
 
 const PreviewPanel = (props: PreviewPanelProps) => {
-  const { searchPathInfo, feeData, priceInfo, slippage } = props;
+  const {
+    searchPathInfo,
+    feeData,
+    priceInfo,
+    slippage,
+    disabled = false,
+  } = props;
 
   const { chain: connectChain } = useNetwork();
   const swapPair = useContext(SwapPair);
@@ -45,7 +52,7 @@ const PreviewPanel = (props: PreviewPanelProps) => {
     <Collapse
       items={[
         {
-          label: <Rate />,
+          label: <Rate disabled={disabled} />,
           extra: (
             <span>
               <Image
@@ -60,7 +67,9 @@ const PreviewPanel = (props: PreviewPanelProps) => {
           ),
           children: (
             <Descriptions
-              className={homeStyles["swap-descriptions"]}
+              className={`${homeStyles["swap-descriptions"]} ${
+                disabled ? homeStyles["disabled"] : ""
+              }`}
               column={1}
               colon={false}
               items={[

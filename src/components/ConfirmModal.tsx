@@ -35,6 +35,7 @@ import { PathQueryResult } from "iziswap-sdk/lib/search/types";
 import Rate from "./Rate";
 import { useSwapWrite } from "./useSwapWrite";
 import { NotificationInstance } from "antd/es/notification/interface";
+import useFontSize from "./useFontSize";
 
 import homeStyles from "@/styles/Home.module.less";
 import styles from "@/styles/ConfirmModal.module.less";
@@ -140,6 +141,24 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         getNFloatNumber(Number(item.formatted) * priceInfo.data[item.symbol]),
     }));
   }, [swapPair, priceInfo]);
+
+  const [fontSize1, textRef1] = useFontSize(
+    {
+      minSize: 18,
+      maxSize: 36,
+      minLength: 13,
+    },
+    swapPairPlus[0]!.formatted
+  );
+
+  const [fontSize2, textRef2] = useFontSize(
+    {
+      minSize: 18,
+      maxSize: 36,
+      minLength: 13,
+    },
+    swapPair[1]!.formatted
+  );
 
   const networkFee = feeData?.gasPrice
     ? getNetworkFee(
@@ -343,14 +362,19 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         onCancel={() => setConfirmModalOpen(false)}
       >
         <div className="swap-pair">
-          {swapPairPlus.map((item) => (
+          {swapPairPlus.map((item, index) => (
             <div className="pair-item" key={item.tip}>
               <div className="tip">{item.tip}</div>
               <div className="center">
-                <div className="value">
-                  {item.formatted} {item.symbol}
+                <div
+                  className="value"
+                  style={{ fontSize: index === 0 ? fontSize1 : fontSize2 }}
+                  ref={index === 0 ? textRef1 : textRef2}
+                >
+                  {item.formatted}
                 </div>
                 <div className="symbol">
+                  {item.symbol}
                   {item.icon && (
                     <Image
                       src={item.icon}
@@ -464,10 +488,9 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                     height="16"
                     width="16"
                   />
+                  {swapPair[0].symbol}
                 </div>
-                <div className="value">
-                  {swapPair[0].formatted} {swapPair[0].symbol}
-                </div>
+                <div className="value">{swapPair[0].formatted}</div>
               </div>
               <span>
                 <ArrowRightOutlined />
@@ -480,10 +503,9 @@ function ConfirmModal(props: ConfirmModalPropsType) {
                     height="16"
                     width="16"
                   />
+                  {swapPair[1].symbol}
                 </div>
-                <div className="value">
-                  {swapPair[1].formatted} {swapPair[1].symbol}
-                </div>
+                <div className="value">{swapPair[1].formatted}</div>
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@ import { SwapPair, SwapType } from "./context";
 import { getNFloatNumber } from "./utils";
 import { SwapTypeEnum } from "./ConfirmModal";
 
-export default function Rate() {
+export default function Rate({ disabled = false }: { disabled?: boolean }) {
   const swapPair = useContext(SwapPair);
   const swapType = useContext(SwapType);
 
@@ -21,6 +21,7 @@ export default function Rate() {
       onClick={(e) => {
         e.stopPropagation();
       }}
+      style={{ opacity: disabled ? 0.4 : 1, userSelect: "none" }}
     >
       1 {swapPair[0].symbol} = {yFormatValue} {swapPair[1].symbol}
     </span>

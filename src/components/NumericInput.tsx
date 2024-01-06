@@ -6,6 +6,7 @@ import CurrencySelectModal from "./CurrencySelectModal";
 import type { Currency } from "./currencyMap";
 import { PriceInfo, getNFloatNumber } from "./utils";
 import { SwapPair } from "./context";
+import useFontSize from "./useFontSize";
 
 interface NumericInputProps {
   currencyMap: Record<string, Currency> | undefined;
@@ -47,6 +48,15 @@ const NumericInput = (props: NumericInputProps) => {
     }
   }, [swapPair, index, priceInfo]);
 
+  const [fontSize, textRef] = useFontSize(
+    {
+      minSize: 22,
+      maxSize: 36,
+      minLength: 13,
+    },
+    swapPair[index]!.formatted
+  );
+
   const onHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = e.target;
     const reg = /^\d*(\.\d*)?$/;
@@ -83,7 +93,8 @@ const NumericInput = (props: NumericInputProps) => {
         <div className="tip">{tip}</div>
         <div className="center">
           <Input
-            style={props.style}
+            style={{ ...props.style, fontSize }}
+            ref={textRef}
             size="large"
             placeholder="0"
             maxLength={16}

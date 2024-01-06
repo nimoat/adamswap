@@ -156,6 +156,7 @@ span.button:hover {
 .logo {
   display: flex;
   align-items: center;
+
   .logoName {
     font-size: 24px;
     font-weight: 700;
@@ -290,9 +291,8 @@ span.button:hover {
 
 .swap-primary-btn {
   width: 100%;
-  height: unset;
+  height: 46px !important;
   margin-top: @sizeXXS + 0px;
-  padding: @sizeMS + 0px;
   line-height: 24px;
   border-radius: 16px;
   border: none;
@@ -325,6 +325,14 @@ span.button:hover {
     .ant-descriptions-row:last-child {
       .ant-descriptions-item {
         padding: 0;
+      }
+    }
+  }
+
+  &.disabled {
+    :global {
+      .ant-descriptions-item-content {
+        opacity: 0.4;
       }
     }
   }
