@@ -165,7 +165,8 @@ function ConfirmModal(props: ConfirmModalPropsType) {
         feeData.gasPrice,
         gasLimit,
         priceInfo,
-        connectChain!.nativeCurrency.symbol
+        connectChain!.nativeCurrency.symbol,
+        swapType
       )
     : "";
 
@@ -408,7 +409,7 @@ function ConfirmModal(props: ConfirmModalPropsType) {
               {
                 key: 1,
                 label: "Price imapct",
-                children: `~${getNFloatNumber(
+                children: `${getNFloatNumber(
                   (searchPathInfo?.priceImpact ?? 0) * 100,
                   2
                 )}%`,

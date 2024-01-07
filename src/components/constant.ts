@@ -88,7 +88,7 @@ const searchPathParams_release: Record<number, MySearchPathQueryParams> = {
 
 export const approveGasLimit = 50_000n;
 
-export const gasLimit = 255_000n;
+export const gasLimit = 255_000n; // 仅用于估算U计价的netFee 如果是Wrap/Unwrap 要除5
 
 export const defaultSlippage = 3; // @PRD
 

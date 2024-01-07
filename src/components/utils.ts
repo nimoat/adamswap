@@ -1,4 +1,5 @@
 import { formatEther, formatUnits } from "viem";
+import { SwapTypeEnum } from "./ConfirmModal";
 
 // 省略显示数字
 export const getNFloatNumber = (number: string | number = 0, n = 3) => {
@@ -46,11 +47,19 @@ export const getNetworkFee = (
   gasPrice: bigint,
   gasLimit: bigint,
   priceInfo: PriceInfo,
-  symbol: string
+  symbol: string,
+  swapType: SwapTypeEnum
 ) =>
   "$" +
   getNFloatNumber(
-    Number(formatEther(gasPrice * gasLimit)) * priceInfo.data[symbol]
+    Number(
+      formatEther(
+        gasPrice *
+          ([SwapTypeEnum.unWrap, SwapTypeEnum.wrap].includes(swapType)
+            ? gasLimit / 5n
+            : gasLimit)
+      )
+    ) * priceInfo.data[symbol]
   );
 
 /** 使用时需要除以1000_000n (6个0) */

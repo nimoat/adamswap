@@ -44,7 +44,8 @@ const PreviewPanel = (props: PreviewPanelProps) => {
         feeData.gasPrice,
         gasLimit,
         priceInfo,
-        connectChain!.nativeCurrency.symbol
+        connectChain!.nativeCurrency.symbol,
+        swapType!
       )
     : "";
 
@@ -76,7 +77,7 @@ const PreviewPanel = (props: PreviewPanelProps) => {
                 {
                   key: 1,
                   label: "Price imapct",
-                  children: `~${getNFloatNumber(
+                  children: `${getNFloatNumber(
                     (searchPathInfo?.priceImpact ?? 0) * 100,
                     2
                   )}%`,
