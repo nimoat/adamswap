@@ -63,6 +63,11 @@ export default function Home() {
     [connectChain, chains]
   );
 
+  const isPrepared = useMemo(
+    () => isConnected && isCorrectChain,
+    [isConnected, isCorrectChain]
+  );
+
   const swapType = useMemo(() => {
     if (swapPair.every((sp) => !!sp.symbol) && connectChain?.id) {
       if (swapPair[0].symbol === connectChain.nativeCurrency.symbol) {
@@ -160,7 +165,7 @@ export default function Home() {
   useEffect(() => {
     initSwapPair();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenList, connectChain]);
+  }, [tokenList, connectChain, isPrepared]);
 
   // 仅客户端渲染时需要
   useEffect(() => {
@@ -177,11 +182,6 @@ export default function Home() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCorrectChain, isConnected]);
-
-  const isPrepared = useMemo(
-    () => isConnected && isCorrectChain,
-    [isConnected, isCorrectChain]
-  );
 
   const onCurrencySelect = (currency: Currency, index: 0 | 1 = 0) => {
     if (currency.symbol === swapPair[1 - index].symbol) {
@@ -397,7 +397,7 @@ export default function Home() {
             <div className={styles.container}>
               <div className={styles.title}>
                 <span className={styles.titleText}>Swap</span>
-                {(isPrepared || true) && (
+                {isPrepared && (
                   <Popconfirm
                     rootClassName={styles.settingPopover}
                     placement="bottomRight"
@@ -442,7 +442,7 @@ export default function Home() {
                 disabled={!isPrepared || searchPathLoading}
                 onSelect={(e) => onCurrencySelect(e, 1)}
               />
-              {swapPair[0].value && swapPair[1].value ? (
+              {swapPair[0].value && swapPair[1].value && isPrepared ? (
                 <PreviewPanel
                   searchPathInfo={searchPathInfo!}
                   feeData={feeData}
@@ -457,7 +457,7 @@ export default function Home() {
             </div>
           </div>
         </main>
-        {swapPair.every((sp) => !!sp.symbol) && (
+        {swapPair.every((sp) => !!sp.symbol) && isPrepared && (
           <ConfirmModal
             isModalOpen={isConfirmModalOpen}
             priceInfo={priceInfo!}
