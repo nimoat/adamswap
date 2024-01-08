@@ -7,6 +7,7 @@ function SBTPoints() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        flexGrow: 1,
         height: "50%",
         fontSize: 20,
       }}

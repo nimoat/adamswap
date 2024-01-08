@@ -37,6 +37,11 @@ body,
 #__next {
   min-height: 100% !important;
   height: 100%;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 body {
@@ -67,9 +72,4 @@ code:after {
 ul,
 li {
   list-style-position: inside;
-}
-
-header {
-  position: fixed;
-  width: 100%;
 }

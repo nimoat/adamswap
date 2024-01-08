@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { ConfigProvider } from "antd";
 import { chainImages, supportChains } from "@/components/constant";
 import theme from "../theme/themeConfig";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import favicon from "@/assets/favicon.ico";
 import logo from "@/assets/logo.png";
@@ -55,6 +56,7 @@ export default function App({ Component, pageProps }: AppProps) {
       {ready ? (
         <WagmiConfig config={wagmiConfig}>
           <ConfigProvider theme={theme}>
+            <Header />
             <Component {...pageProps} />
             <Footer />
           </ConfigProvider>

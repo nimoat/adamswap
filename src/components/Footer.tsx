@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
-import { TwitterCircleFilled } from "@ant-design/icons";
+// import { TwitterCircleFilled } from "@ant-design/icons";
 
 import styles from "@/styles/Footer.module.less";
 
@@ -30,7 +30,7 @@ export default function Footer() {
           </Button>
         </Tooltip>
         <Button
-          icon={<TwitterCircleFilled />}
+          // icon={<TwitterCircleFilled />}
           type="link"
           href="https://twitter.com/easyswap_fi"
           target="_blank"

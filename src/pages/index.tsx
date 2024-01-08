@@ -1,16 +1,10 @@
-import Image from "next/image";
 import { useAccount, useNetwork } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
 import { fetchBalance, fetchFeeData, FetchFeeDataResult } from "@wagmi/core";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import React, { useEffect, useMemo, useState } from "react";
-import logo from "@/assets/logo.png";
 import { Button, ButtonProps, Popconfirm, notification } from "antd";
-import {
-  SwapOutlined,
-  WarningOutlined,
-  SettingFilled,
-} from "@ant-design/icons";
+import { SwapOutlined, SettingFilled } from "@ant-design/icons";
 import NumericInput from "@/components/NumericInput";
 import type { Currency, CurrencyV } from "@/components/currencyMap";
 import PreviewPanel from "@/components/PreviewPanel";
@@ -47,10 +41,6 @@ export const client_getStaticProps = async (chainId: number) => {
 };
 
 export default function Home() {
-  // const { _priceInfo } = props;
-  const [isNetworkSwitchHighlighted, setIsNetworkSwitchHighlighted] =
-    useState(false);
-  const [isConnectHighlighted, setIsConnectHighlighted] = useState(false);
   const [fetchedCurrencies, setFetchedCurrencies] = useState<Currency[]>([]);
   const [swapPair, setSwapPair] = useState<[CurrencyV, CurrencyV]>([
     { value: 0n, formatted: "" },
@@ -65,7 +55,7 @@ export default function Home() {
 
   const { address: accountAddress, isConnected } = useAccount();
   const { chain: connectChain, chains } = useNetwork();
-  const { open: openWeb3Modal, close: closeWeb3Modal } = useWeb3Modal();
+  const { open: openWeb3Modal } = useWeb3Modal();
   const [notify, contextHolder] = notification.useNotification();
 
   const isCorrectChain = useMemo(
@@ -187,18 +177,6 @@ export default function Home() {
     () => isConnected && isCorrectChain,
     [isConnected, isCorrectChain]
   );
-
-  useEffect(() => {
-    if (isCorrectChain) {
-      closeWeb3Modal();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCorrectChain]);
-
-  const closeAll = () => {
-    setIsNetworkSwitchHighlighted(false);
-    setIsConnectHighlighted(false);
-  };
 
   const onCurrencySelect = (currency: Currency, index: 0 | 1 = 0) => {
     if (currency.symbol === swapPair[1 - index].symbol) {
@@ -409,50 +387,6 @@ export default function Home() {
   return (
     <SwapPair.Provider value={swapPair}>
       <SwapType.Provider value={swapType}>
-        <header>
-          <div
-            className={styles.backdrop}
-            style={{
-              opacity:
-                isConnectHighlighted || isNetworkSwitchHighlighted ? 1 : 0,
-            }}
-          />
-          <div className={styles.header}>
-            <div className={styles.logo}>
-              <Image src={logo.src} alt="EasySwap" height="40" width="40" />
-              <div className={styles.logoName}>EasySwap</div>
-            </div>
-            <div className={styles.buttons}>
-              <div
-                onClick={closeAll}
-                className={`${styles.highlight} ${
-                  isNetworkSwitchHighlighted ? styles.highlightSelected : ``
-                }`}
-              >
-                {isCorrectChain || !isConnected ? (
-                  <w3m-network-button />
-                ) : (
-                  <Button
-                    type="text"
-                    danger
-                    icon={<WarningOutlined />}
-                    onClick={() => openWeb3Modal({ view: "Networks" })}
-                  >
-                    Wrong Network
-                  </Button>
-                )}
-              </div>
-              <div
-                onClick={closeAll}
-                className={`${styles.highlight} ${
-                  isConnectHighlighted ? styles.highlightSelected : ``
-                }`}
-              >
-                <w3m-button balance="hide" />
-              </div>
-            </div>
-          </div>
-        </header>
         <main className={styles.main}>
           <div className={styles.wrapper}>
             <div className={styles.container}>
