@@ -144,7 +144,7 @@ export default function Home() {
     [fetchedCurrencies]
   );
 
-  useEffect(() => {
+  const initSwapPair = () => {
     setSwapPair([
       {
         ...tokenList.find(
@@ -155,6 +155,11 @@ export default function Home() {
       },
       { value: 0n, formatted: "" },
     ]);
+  };
+
+  useEffect(() => {
+    initSwapPair();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenList, connectChain]);
 
   // 仅客户端渲染时需要
@@ -461,7 +466,10 @@ export default function Home() {
             slippage={slippage}
             notify={notify}
             setConfirmModalOpen={setIsConfirmModalOpen}
-            onSuccess={() => fetchAllBalance()}
+            onSuccess={() => {
+              fetchAllBalance();
+              initSwapPair();
+            }}
           />
         )}
         {contextHolder}
